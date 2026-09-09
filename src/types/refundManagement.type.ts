@@ -2,6 +2,8 @@ export interface IUserBasic {
   _id: string;
   name: string;
   sureName?: string;
+  companyName?: string;
+  phone?: string;
   email: string;
   profileImage?: string;
   role?: string;
@@ -29,8 +31,9 @@ export interface IStatusTimestamps {
   createdAt: string;
   acceptedAt?: string;
   inProgressAt?: string;
-  deliveryRequestAt?: string;
-  deliveredAt?: string;
+  deliveryRequestAt?: string | null;
+  deliveryRequestDeclineAt?: string | null;
+  deliveredAt?: string | null;
   refundRequestedAt?: string;
   refundedAt?: string | null;
   cancelledAt?: string | null;
@@ -56,11 +59,13 @@ export interface IPackageBasic {
 
 export interface IGearMarketplace {
   _id: string;
-  authorId: string;
+  authorId?: string;
   name: string;
   price: number;
   vatAmount: number;
-  totalVatAmount?: number;
+  totalVatAmount?: number | null;
+  platformCommission?: number;
+  mainPrice?: number;
   description: string;
   condition: string;
   gallery: string[];
@@ -70,10 +75,9 @@ export interface IGearMarketplace {
   };
   extraInformation?: string;
   approvalStatus: string;
-  isDeleted: boolean;
-  createdAt: string;
-  updatedAt: string;
-  mainPrice?: number;
+  isDeleted?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
   status?: string;
   categoryId?: string;
 }
@@ -87,7 +91,7 @@ export interface IRefundManagement {
   clientId?: IUserBasic;
   serviceProviderId?: IUserBasic;
   sellerId?: IUserBasic;
-  orderType: "custom" | "direct" | "gear" | "workshop" | string;
+  orderType: "custom" | "direct" | "gear" | string;
   serviceType?: string;
   date?: string;
   time?: string;
@@ -102,6 +106,7 @@ export interface IRefundManagement {
   reason?: string;
   cancelReason?: string;
   cancelRequestedBy?: string;
+  cancelledBy?: string;
   cancelApprovalDate?: string;
   cancelApprovalBy?: string;
   packageId?: string | IPackageBasic;
@@ -109,7 +114,7 @@ export interface IRefundManagement {
   lastDeliveryDate?: string;
   refundDate?: string;
   status: "cancelled" | "pending" | "refunded" | "declined" | string;
-  paymentStatus: "Paid" | "Unpaid" | "Refunded" | "pending" | "completed" | string;
+  paymentStatus: "Paid" | "Unpaid" | "Refunded" | "pending" | "received" | "completed" | string;
   refundStatus?: "pending" | "refunded" | "declined" | "completed" | "processing";
   isDeleted?: boolean;
   statusTimestamps?: IStatusTimestamps;
@@ -124,72 +129,24 @@ export interface IRefundManagement {
   mobileNumber?: string;
   email?: string;
   name?: string;
+  companyName?: string;
+  companyAddress?: string;
+  deliveryNote?: string;
+  loginAsCompany?: boolean;
+  ico?: string;
+  dic?: string;
+  ic_dph?: string;
   description?: string;
   couponDiscount?: number;
   isRegisterAsCompany?: boolean;
-  paymentId?: string;
+  paymentId?:
+    | string
+    | {
+        _id?: string;
+        transactionId?: string;
+        paymentMethod?: string;
+      };
   createdAt: string;
   updatedAt: string;
   orderStatus?: string;
-}
-
-export interface IWorkshopRefund {
-  _id: string;
-  orderId: string;
-  refundId?: string;
-  refundAmount?: number;
-  reason?: string;
-  refundStatus: "pending" | "refunded" | "declined" | "completed";
-  refundPayment?: {
-    status: "pending" | "received" | "failed" | "refunded";
-    amount: number;
-    refundedAt?: string | null;
-  };
-  instructorPayment?: {
-    status: "pending" | "received" | "failed";
-    amount: number;
-    paidAt: string | null;
-  };
-  clientId: {
-    _id: string;
-    name: string;
-    email: string;
-    profileImage?: string;
-    profileId?: {
-      _id?: string;
-      bankName?: string;
-      accountNumber?: string;
-    };
-  };
-  instructorId: {
-    _id: string;
-    name: string;
-    email: string;
-    profileImage?: string;
-    profileId?: {
-      _id?: string;
-      bankName?: string;
-      accountNumber?: string;
-    };
-  };
-  workshopId: {
-    _id: string;
-    title: string;
-    date: string;
-    time: string;
-    locationType: string;
-    vatAmount: number;
-    price: number;
-    mainPrice: number;
-    image?: string;
-  };
-  paymentStatus: string;
-  streetAddress?: string;
-  town?: string;
-  country?: string;
-  isRegisterAsCompany?: boolean;
-  name?: string;
-  joinedAt?: string;
-  createdAt: string;
-  updatedAt: string;
 }

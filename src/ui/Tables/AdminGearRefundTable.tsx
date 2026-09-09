@@ -35,7 +35,7 @@ const AdminGearRefundTable: React.FC<AdminGearRefundTableProps> = ({
       dataIndex: "clientName",
       key: "clientName",
       render: (_: unknown, record: any) =>
-        record?.clientId?.name || record?.userId?.name || "N/A",
+        record?.clientId?.name || record?.name || record?.userId?.name || "N/A",
     },
     {
       title: "Item Name",
@@ -57,9 +57,13 @@ const AdminGearRefundTable: React.FC<AdminGearRefundTableProps> = ({
       key: "bankName",
       render: (_: unknown, record: IRefundManagement) =>
         record?.clientId?.profileId?.bankName ||
-        record?.userId?.profileId?.bankName ||
         record?.sellerId?.profileId?.bankName ||
-        "N/A",
+        record?.userId?.profileId?.bankName ||
+        record?.clientId?.bankName ||
+        record?.sellerId?.bankName ||
+        (typeof record?.paymentId === "object" && record?.paymentId?.paymentMethod
+          ? String(record.paymentId.paymentMethod).toUpperCase()
+          : "—"),
     },
     {
       title: "Account Number",
@@ -67,61 +71,67 @@ const AdminGearRefundTable: React.FC<AdminGearRefundTableProps> = ({
       key: "accountNumber",
       render: (_: unknown, record: IRefundManagement) =>
         record?.clientId?.profileId?.accountNumber ||
-        record?.userId?.profileId?.accountNumber ||
         record?.sellerId?.profileId?.accountNumber ||
-        "N/A",
+        record?.userId?.profileId?.accountNumber ||
+        record?.clientId?.accountNumber ||
+        record?.sellerId?.accountNumber ||
+        record?.clientId?.profileId?.iban ||
+        record?.sellerId?.profileId?.iban ||
+        "—",
     },
     {
-      title: "Refund Amount",
-      dataIndex: "refundAmount",
-      key: "refundAmount",
+      title: "Amount",
+      key: "amount",
       render: (_: unknown, record: IRefundManagement) => {
-        if (record?.refundAmount) {
+        const gear = record?.gearMarketplaceId;
+        if (gear?.mainPrice !== undefined && gear?.mainPrice !== null) {
+          const shipping = gear?.shippingCompany?.price || 0;
+          return `${Number((gear.mainPrice + shipping).toFixed(2))}€`;
+        }
+        if (record?.totalPrice !== undefined && record?.totalPrice !== null) {
+          return `${record.totalPrice}€`;
+        }
+        if (record?.refundAmount !== undefined && record?.refundAmount !== null) {
           return `${record.refundAmount}€`;
         }
-        const gear = record?.gearMarketplaceId;
-        if (gear) {
+        if (gear?.price !== undefined && gear?.price !== null) {
           const totalAmount =
             (gear.price || 0) +
             (gear.totalVatAmount || 0) +
             (gear.shippingCompany?.price || 0);
-          return `${totalAmount}€`;
+          return `${Number(totalAmount.toFixed(2))}€`;
         }
-        return `${record?.price || 0}€`;
+        if (record?.price !== undefined && record?.price !== null) {
+          return `${record.price}€`;
+        }
+        return "N/A";
       },
     },
     {
-      title: "Refund Date",
-      dataIndex: "refundDate",
-      key: "refundDate",
-      render: (_: unknown, record: IRefundManagement) =>
-        record?.refundDate || record?.deliveryDate
-          ? new Date(
-              (record.refundDate || record.deliveryDate) as string
-            ).toLocaleDateString()
-          : "N/A",
+      title: "Cancelled Date",
+      key: "cancelledDate",
+      render: (_: unknown, record: IRefundManagement) => {
+        const dateStr =
+          record?.cancelApprovalDate ||
+          record?.statusTimestamps?.cancelledAt ||
+          record?.statusHistory?.find((s: any) => s?.status === "cancelled")?.changedAt ||
+          record?.refundDate ||
+          record?.updatedAt ||
+          record?.createdAt;
+        return dateStr ? new Date(dateStr).toLocaleDateString() : "N/A";
+      },
     },
     {
-      title: "Refund Status",
-      dataIndex: "refundStatus",
-      key: "refundStatus",
+      title: "Cancel Reason",
+      key: "cancelReason",
       render: (_: unknown, record: IRefundManagement) => {
-        const status = record?.refundStatus || record?.status || "pending";
-        const isRefunded = status === "refunded" || status === "completed";
-        const isDeclined = status === "declined";
-
+        const reason = record?.cancelReason || record?.reason || "Cancelled";
         return (
-          <span
-            className={`${
-              isRefunded
-                ? "text-success"
-                : isDeclined
-                ? "text-error"
-                : "text-warning"
-            } font-semibold capitalize`}
-          >
-            {status}
-          </span>
+          <Tooltip title={reason}>
+            <span className="truncate max-w-[130px] inline-block text-sm text-gray-500">
+              {reason}
+            </span>
+          </Tooltip>
         );
       },
     },
@@ -129,15 +139,18 @@ const AdminGearRefundTable: React.FC<AdminGearRefundTableProps> = ({
       title: "Payment Status",
       dataIndex: "paymentStatus",
       key: "paymentStatus",
-      render: (_: unknown, record: IRefundManagement) => {
-        const isRefunded =
-          record?.paymentStatus === "Refunded" ||
-          record?.refundStatus === "refunded";
+      render: (status: string) => {
+        const isReceivedOrPaid =
+          status?.toLowerCase() === "received" ||
+          status?.toLowerCase() === "paid" ||
+          status?.toLowerCase() === "refunded";
         return (
           <span
-            className={`${isRefunded ? "text-success" : "text-error"} font-semibold`}
+            className={`${
+              isReceivedOrPaid ? "text-success" : "text-error"
+            } font-semibold capitalize`}
           >
-            {isRefunded ? "Refunded" : "Pending"}
+            {status || "pending"}
           </span>
         );
       },
@@ -147,8 +160,9 @@ const AdminGearRefundTable: React.FC<AdminGearRefundTableProps> = ({
       key: "action",
       render: (_: unknown, record: IRefundManagement) => {
         const isRefunded =
-          record?.paymentStatus === "Refunded" ||
-          record?.refundStatus === "refunded";
+          record?.paymentStatus?.toLowerCase() === "received" ||
+          record?.paymentStatus?.toLowerCase() === "paid" ||
+          record?.paymentStatus?.toLowerCase() === "refunded";
 
         return (
           <div>
@@ -156,7 +170,7 @@ const AdminGearRefundTable: React.FC<AdminGearRefundTableProps> = ({
               <Tooltip placement="right" title="Process Refund">
                 <ReuseButton
                   variant="secondary"
-                  className="!p-0 !bg-warning !border-none !text-primary-color cursor-pointer !w-full !text-sm"
+                  className="!p-1 !bg-warning !border-none !text-primary-color cursor-pointer !w-full !text-sm"
                   onClick={() => showViewRefundModal(record)}
                 >
                   Process Refund
@@ -165,7 +179,7 @@ const AdminGearRefundTable: React.FC<AdminGearRefundTableProps> = ({
             ) : (
               <ReuseButton
                 variant="outline"
-                className="!p-0 !border !border-success !text-success !cursor-default !w-full !text-sm"
+                className="!p-1 !border !border-success !text-success !cursor-default !w-full !text-sm"
               >
                 Refunded
               </ReuseButton>
@@ -185,7 +199,7 @@ const AdminGearRefundTable: React.FC<AdminGearRefundTableProps> = ({
       total={total}
       limit={limit}
       page={page}
-      keyValue={"orderId"}
+      keyValue={(record: IRefundManagement) => record?._id || record?.orderId}
     />
   );
 };

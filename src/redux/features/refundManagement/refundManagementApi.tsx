@@ -2,70 +2,77 @@ import { baseApi } from "../../api/baseApi";
 import { tagTypes } from "../../tagTypes";
 
 const refundManagementApi = baseApi.injectEndpoints({
+  overrideExisting: true,
   endpoints: (builder) => ({
     // Photography & Videography cancelled orders for refund
     getCancelledEventOrders: builder.query({
-      query: ({ page, limit, searchTerm, paymentStatus }) => ({
-        url: `/event-order`,
-        method: "GET",
-        params: {
-          status: "cancelled",
-          page,
-          limit,
-          searchTerm,
-          ...(paymentStatus ? { paymentStatus } : {}),
-        },
-      }),
+      query: ({ page, limit, searchTerm, searchTerms, paymentStatus }) => {
+        const querySearch = searchTerms || searchTerm;
+        return {
+          url: `/event-order`,
+          method: "GET",
+          params: {
+            status: "cancelled",
+            page,
+            limit,
+            ...(querySearch ? { searchTerms: querySearch } : {}),
+            ...(paymentStatus ? { paymentStatus } : {}),
+          },
+        };
+      },
       providesTags: [tagTypes.refundManagement],
     }),
 
-    // General refund query
-    getRefundManagement: builder.query({
-      query: ({ page, limit, searchTerm, type, refundStatus, paymentStatus }) => ({
-        url: `/users/refund-orders`,
-        method: "GET",
-        params: {
-          page,
-          limit,
-          searchTerm,
-          type,
-          ...(refundStatus ? { refundStatus } : {}),
-          ...(paymentStatus ? { paymentStatus } : {}),
-        },
-      }),
+    // Gear cancelled orders for refund
+    getCancelledGearOrders: builder.query({
+      query: ({ page, limit, searchTerm, searchTerms, paymentStatus }) => {
+        const querySearch = searchTerms || searchTerm;
+        return {
+          url: `/gear-order`,
+          method: "GET",
+          params: {
+            orderStatus: "cancelled",
+            page,
+            limit,
+            ...(querySearch ? { searchTerms: querySearch } : {}),
+            ...(paymentStatus ? { paymentStatus } : {}),
+          },
+        };
+      },
       providesTags: [tagTypes.refundManagement],
     }),
 
-    everOrderMakeRefund: builder.mutation({
+    // Event order refund payment (same endpoint as delivery management)
+    everOrderMakePayment: builder.mutation({
       query: (req) => ({
-        url: `/event-order/complete-refund/${req.params}`,
+        url: `/event-order/complete-payment/${req.params}`,
         method: "PATCH",
       }),
-      invalidatesTags: [tagTypes.refundManagement],
+      invalidatesTags: [
+        tagTypes.refundManagement,
+        tagTypes.deliveryManagement,
+        tagTypes.orderManagement,
+      ],
     }),
 
-    gearOrderMakeRefund: builder.mutation({
+    // Gear order refund payment (same endpoint as delivery management)
+    gearOrderMakePayment: builder.mutation({
       query: (req) => ({
-        url: `/gear-order/complete-refund/${req.params}`,
+        url: `/gear-order/complete-payment/${req.params}`,
         method: "PATCH",
       }),
-      invalidatesTags: [tagTypes.refundManagement],
-    }),
-
-    workshopOrderMakeRefund: builder.mutation({
-      query: (req) => ({
-        url: `/workshopParticipant/complete-refund/${req.params}`,
-        method: "PATCH",
-      }),
-      invalidatesTags: [tagTypes.refundManagement],
+      invalidatesTags: [
+        tagTypes.refundManagement,
+        tagTypes.deliveryManagement,
+        tagTypes.orderManagement,
+      ],
     }),
   }),
 });
 
 export const {
   useGetCancelledEventOrdersQuery,
-  useGetRefundManagementQuery,
-  useEverOrderMakeRefundMutation,
-  useGearOrderMakeRefundMutation,
-  useWorkshopOrderMakeRefundMutation,
+  useGetCancelledGearOrdersQuery,
+  useEverOrderMakePaymentMutation,
+  useGearOrderMakePaymentMutation,
 } = refundManagementApi;

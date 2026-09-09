@@ -41,7 +41,11 @@ const AdminAllRefundManagementTable: React.FC<AdminAllRefundManagementTableProps
       render: (_: unknown, record: IRefundManagement) =>
         record?.userId?.profileId?.bankName ||
         record?.serviceProviderId?.profileId?.bankName ||
-        "—",
+        record?.userId?.bankName ||
+        record?.serviceProviderId?.bankName ||
+        (typeof record?.paymentId === "object" && record?.paymentId?.paymentMethod
+          ? String(record.paymentId.paymentMethod).toUpperCase()
+          : "—"),
     },
     {
       title: "Bank Account Number",
@@ -49,6 +53,10 @@ const AdminAllRefundManagementTable: React.FC<AdminAllRefundManagementTableProps
       render: (_: unknown, record: IRefundManagement) =>
         record?.userId?.profileId?.accountNumber ||
         record?.serviceProviderId?.profileId?.accountNumber ||
+        record?.userId?.accountNumber ||
+        record?.serviceProviderId?.accountNumber ||
+        record?.userId?.profileId?.iban ||
+        record?.serviceProviderId?.profileId?.iban ||
         "—",
     },
     {
@@ -75,11 +83,37 @@ const AdminAllRefundManagementTable: React.FC<AdminAllRefundManagementTableProps
       title: "Amount",
       key: "amount",
       render: (_: unknown, record: IRefundManagement) => {
-        if (record?.totalPrice) return `${record.totalPrice}€`;
-        if (record?.priceWithServiceFee) return `${record.priceWithServiceFee}€`;
-        if (record?.price) return `${record.price}€`;
+        if (
+          record?.totalPrice !== undefined &&
+          record?.totalPrice !== null &&
+          record?.totalPrice > 0
+        ) {
+          return `${record.totalPrice}€`;
+        }
+        if (
+          record?.priceWithServiceFee !== undefined &&
+          record?.priceWithServiceFee !== null &&
+          record?.priceWithServiceFee > 0
+        ) {
+          return `${record.priceWithServiceFee}€`;
+        }
+        if (
+          record?.price !== undefined &&
+          record?.price !== null &&
+          record?.price > 0
+        ) {
+          return `${record.price}€`;
+        }
         if (record?.budget_range) return record.budget_range;
-        if (record?.refundAmount) return `${record.refundAmount}€`;
+        if (
+          record?.refundAmount !== undefined &&
+          record?.refundAmount !== null
+        ) {
+          return `${record.refundAmount}€`;
+        }
+        if (record?.totalPrice !== undefined && record?.totalPrice !== null) {
+          return `${record.totalPrice}€`;
+        }
         return "N/A";
       },
     },
@@ -88,7 +122,9 @@ const AdminAllRefundManagementTable: React.FC<AdminAllRefundManagementTableProps
       key: "cancelledDate",
       render: (_: unknown, record: IRefundManagement) => {
         const dateStr =
+          record?.cancelApprovalDate ||
           record?.statusTimestamps?.cancelledAt ||
+          record?.statusHistory?.find((s: any) => s?.status === "cancelled")?.changedAt ||
           record?.refundDate ||
           record?.updatedAt ||
           record?.createdAt;
@@ -114,7 +150,9 @@ const AdminAllRefundManagementTable: React.FC<AdminAllRefundManagementTableProps
       dataIndex: "paymentStatus",
       key: "paymentStatus",
       render: (status: string) => {
-        const isPaid = status?.toLowerCase() === "paid" || status === "Refunded";
+        const isPaid =
+          status?.toLowerCase() === "paid" ||
+          status?.toLowerCase() === "refunded";
         return (
           <span
             className={`${isPaid ? "text-success" : "text-error"} font-semibold`}
@@ -130,7 +168,7 @@ const AdminAllRefundManagementTable: React.FC<AdminAllRefundManagementTableProps
       render: (_: unknown, record: IRefundManagement) => {
         const isAlreadyPaidOrRefunded =
           record?.paymentStatus?.toLowerCase() === "paid" ||
-          record?.paymentStatus === "Refunded";
+          record?.paymentStatus?.toLowerCase() === "refunded";
 
         return (
           <div>
@@ -167,7 +205,7 @@ const AdminAllRefundManagementTable: React.FC<AdminAllRefundManagementTableProps
       total={total}
       limit={limit}
       page={page}
-      keyValue={"orderId"}
+      keyValue={(record: IRefundManagement) => record?._id || record?.orderId}
     />
   );
 };

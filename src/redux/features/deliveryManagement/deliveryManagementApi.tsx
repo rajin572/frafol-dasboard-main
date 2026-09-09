@@ -22,14 +22,14 @@ const deliveryManagementApi = baseApi.injectEndpoints({
         url: `/event-order/complete-payment/${req.params}`,
         method: "PATCH",
       }),
-      invalidatesTags: [tagTypes.deliveryManagement],
+      invalidatesTags: [tagTypes.deliveryManagement, tagTypes.refundManagement],
     }),
     gearOrderMakePayment: builder.mutation({
       query: (req) => ({
         url: `/gear-order/complete-payment/${req.params}`,
         method: "PATCH",
       }),
-      invalidatesTags: [tagTypes.deliveryManagement],
+      invalidatesTags: [tagTypes.deliveryManagement, tagTypes.refundManagement],
     }),
     workshopOrderMakePayment: builder.mutation({
       query: (req) => ({
