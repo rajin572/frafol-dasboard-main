@@ -7,6 +7,7 @@ export const ADMIN_ROUTE_OPTIONS = [
   { label: "Approvals", value: "approvals" },
   { label: "Order Management", value: "order-management" },
   { label: "Delivery Management", value: "delivery-management" },
+  { label: "Refund Management", value: "refund-management" },
   { label: "Gear Marketplace", value: "gear-marketplace" },
   { label: "Package Management", value: "package-management" },
   { label: "Workshop Management", value: "workshop-management" },

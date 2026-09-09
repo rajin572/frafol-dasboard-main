@@ -17,6 +17,7 @@ import settingsLogo from "/images/dashboard-logo/settings.svg";
 //* ------------------IMPORT COMPONENTS------------------
 import AdminDashboard from "../pages/Admin/AdminDashboard";
 import AdminDeliveryManagement from "../pages/Admin/AdminDeliveryManagement";
+import AdminRefundManagement from "../pages/Admin/AdminRefundManagement";
 import AdminGearMarketplacePage from "../pages/Admin/AdminGearMarketplace";
 import AdminWorkshopManagement from "../pages/Admin/AdminWorkshopManagement";
 import AdminAllTransaction from "../pages/Admin/AdminAllTransaction";
@@ -84,6 +85,13 @@ export const adminPaths = [
     element: <AdminDeliveryManagement />,
     key: "delivery-management",
     name: "Delivery Management",
+    icon: orderLogo,
+  },
+  {
+    path: "refund-management",
+    element: <AdminRefundManagement />,
+    key: "refund-management",
+    name: "Refund Management",
     icon: orderLogo,
   },
 
