@@ -3,6 +3,23 @@ import { tagTypes } from "../../tagTypes";
 
 const refundManagementApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+    // Photography & Videography cancelled orders for refund
+    getCancelledEventOrders: builder.query({
+      query: ({ page, limit, searchTerm, paymentStatus }) => ({
+        url: `/event-order`,
+        method: "GET",
+        params: {
+          status: "cancelled",
+          page,
+          limit,
+          searchTerm,
+          ...(paymentStatus ? { paymentStatus } : {}),
+        },
+      }),
+      providesTags: [tagTypes.refundManagement],
+    }),
+
+    // General refund query
     getRefundManagement: builder.query({
       query: ({ page, limit, searchTerm, type, refundStatus, paymentStatus }) => ({
         url: `/users/refund-orders`,
@@ -18,6 +35,7 @@ const refundManagementApi = baseApi.injectEndpoints({
       }),
       providesTags: [tagTypes.refundManagement],
     }),
+
     everOrderMakeRefund: builder.mutation({
       query: (req) => ({
         url: `/event-order/complete-refund/${req.params}`,
@@ -25,6 +43,7 @@ const refundManagementApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: [tagTypes.refundManagement],
     }),
+
     gearOrderMakeRefund: builder.mutation({
       query: (req) => ({
         url: `/gear-order/complete-refund/${req.params}`,
@@ -32,6 +51,7 @@ const refundManagementApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: [tagTypes.refundManagement],
     }),
+
     workshopOrderMakeRefund: builder.mutation({
       query: (req) => ({
         url: `/workshopParticipant/complete-refund/${req.params}`,
@@ -43,6 +63,7 @@ const refundManagementApi = baseApi.injectEndpoints({
 });
 
 export const {
+  useGetCancelledEventOrdersQuery,
   useGetRefundManagementQuery,
   useEverOrderMakeRefundMutation,
   useGearOrderMakeRefundMutation,

@@ -7,129 +7,18 @@ import RefundManagementMakeRefundModal from "../../ui/Modal/RefundManagement/Ref
 import ReusableTabs from "../../ui/ReusableTabs";
 import ReuseSelect from "../../ui/Form/ReuseSelect";
 import { IRefundManagement, IWorkshopRefund } from "../../types/refundManagement.type";
-// import tryCatchWrapper from "../../utils/tryCatchWrapper";
-
-// =============================================================================
-// API INTEGRATION (COMMENTED OUT AS REQUESTED)
-// Uncomment the imports and hooks below when connecting to backend endpoints.
-// =============================================================================
-/*
+import tryCatchWrapper from "../../utils/tryCatchWrapper";
 import {
-  useGetRefundManagementQuery,
+  useGetCancelledEventOrdersQuery,
   useEverOrderMakeRefundMutation,
-  useGearOrderMakeRefundMutation,
-  useWorkshopOrderMakeRefundMutation,
+  // useGetRefundManagementQuery,
+  // useGearOrderMakeRefundMutation,
+  // useWorkshopOrderMakeRefundMutation,
 } from "../../redux/features/refundManagement/refundManagementApi";
-*/
-// =============================================================================
 
 type ActiveTab = "professional" | "gear" | "workshop";
 
-// Default Mock Data for UI interaction while API integration is commented out
-const INITIAL_PROFESSIONAL_REFUNDS: IRefundManagement[] = [
-  {
-    _id: "prof-ref-1",
-    orderId: "REF-10041",
-    userId: {
-      _id: "u-1",
-      name: "Alexander Wright",
-      email: "alex.wright@example.com",
-      profileId: {
-        bankName: "Tatra Banka",
-        accountNumber: "SK8911000000002949111422",
-      },
-    },
-    serviceProviderId: {
-      _id: "sp-1",
-      name: "Elena Rostova",
-      email: "elena.photo@example.com",
-      profileId: {
-        bankName: "VUB Banka",
-        accountNumber: "SK3102000000001984221199",
-      },
-    },
-    orderType: "direct",
-    serviceType: "Wedding Photography",
-    refundAmount: 350,
-    price: 350,
-    refundDate: "2026-08-14T10:00:00.000Z",
-    deliveryDate: "2026-08-20T10:00:00.000Z",
-    status: "pending",
-    refundStatus: "pending",
-    paymentStatus: "pending",
-    createdAt: "2026-08-14T09:30:00.000Z",
-    updatedAt: "2026-08-14T09:30:00.000Z",
-    reason: "Client schedule conflict, cancelled within policy window.",
-  },
-  {
-    _id: "prof-ref-2",
-    orderId: "REF-10042",
-    userId: {
-      _id: "u-2",
-      name: "Marcus Aurelius",
-      email: "marcus@example.com",
-      profileId: {
-        bankName: "SLSP Banka",
-        accountNumber: "SK1209000000004523991001",
-      },
-    },
-    serviceProviderId: {
-      _id: "sp-2",
-      name: "Peter Novak",
-      email: "peter.novak@example.com",
-      profileId: {
-        bankName: "CSOB Banka",
-        accountNumber: "SK7575000000008891223344",
-      },
-    },
-    orderType: "direct",
-    serviceType: "Commercial Drone Videography",
-    refundAmount: 520,
-    price: 520,
-    refundDate: "2026-08-10T14:15:00.000Z",
-    deliveryDate: "2026-08-15T14:15:00.000Z",
-    status: "refunded",
-    refundStatus: "refunded",
-    paymentStatus: "Refunded",
-    createdAt: "2026-08-10T12:00:00.000Z",
-    updatedAt: "2026-08-11T09:00:00.000Z",
-    reason: "Severe weather cancellation; refunded in full.",
-  },
-  {
-    _id: "prof-ref-3",
-    orderId: "REF-10043",
-    userId: {
-      _id: "u-3",
-      name: "Sophie Laurent",
-      email: "sophie.l@example.com",
-      profileId: {
-        bankName: "UniCredit Bank",
-        accountNumber: "SK4411110000006612349988",
-      },
-    },
-    serviceProviderId: {
-      _id: "sp-3",
-      name: "Tomas Horvath",
-      email: "tomas.h@example.com",
-      profileId: {
-        bankName: "Tatra Banka",
-        accountNumber: "SK0211000000002611992200",
-      },
-    },
-    orderType: "direct",
-    serviceType: "Fashion Portrait Session",
-    refundAmount: 240,
-    price: 240,
-    refundDate: "2026-08-22T11:45:00.000Z",
-    deliveryDate: "2026-08-28T11:45:00.000Z",
-    status: "pending",
-    refundStatus: "pending",
-    paymentStatus: "pending",
-    createdAt: "2026-08-22T11:00:00.000Z",
-    updatedAt: "2026-08-22T11:00:00.000Z",
-    reason: "Studio double-booking error.",
-  },
-];
+// Real response items from API (/event-order?status=cancelled) for Photography & Videography
 
 const INITIAL_GEAR_REFUNDS: IRefundManagement[] = [
   {
@@ -176,12 +65,11 @@ const INITIAL_GEAR_REFUNDS: IRefundManagement[] = [
     refundAmount: 2235,
     price: 2235,
     refundDate: "2026-08-18T16:20:00.000Z",
-    status: "pending",
-    refundStatus: "pending",
-    paymentStatus: "pending",
+    status: "cancelled",
+    paymentStatus: "Unpaid",
     createdAt: "2026-08-18T16:00:00.000Z",
     updatedAt: "2026-08-18T16:00:00.000Z",
-    reason: "Buyer received damaged sensor; seller agreed to return & refund.",
+    cancelReason: "Buyer received damaged sensor; seller agreed to return & refund.",
   },
   {
     _id: "gear-ref-2",
@@ -227,12 +115,11 @@ const INITIAL_GEAR_REFUNDS: IRefundManagement[] = [
     refundAmount: 824,
     price: 824,
     refundDate: "2026-08-12T13:10:00.000Z",
-    status: "refunded",
-    refundStatus: "refunded",
-    paymentStatus: "Refunded",
+    status: "cancelled",
+    paymentStatus: "Paid",
     createdAt: "2026-08-12T12:00:00.000Z",
     updatedAt: "2026-08-13T10:30:00.000Z",
-    reason: "Order canceled prior to shipment dispatch.",
+    cancelReason: "Order canceled prior to shipment dispatch.",
   },
 ];
 
@@ -329,8 +216,8 @@ const AdminRefundManagement = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("professional");
   const [page, setPage] = useState(1);
   const [searchText, setSearchText] = useState("");
-  const [refundFilter, setRefundFilter] = useState("");
-  const limit = 12;
+  const [paymentFilter, setPaymentFilter] = useState("");
+  const limit = 10;
 
   const [showViewRefundModal, setShowViewRefundModal] = useState(false);
   const [currentRecord, setCurrentRecord] = useState<
@@ -339,7 +226,7 @@ const AdminRefundManagement = () => {
 
   // Local state for UI preview (allows testing refund actions while API is commented out)
   const [profRefunds, setProfRefunds] = useState<IRefundManagement[]>(
-    INITIAL_PROFESSIONAL_REFUNDS
+    []
   );
   const [gearRefunds, setGearRefunds] = useState<IRefundManagement[]>(
     INITIAL_GEAR_REFUNDS
@@ -349,38 +236,61 @@ const AdminRefundManagement = () => {
   );
 
   // ===========================================================================
-  // API INTEGRATION CODES (COMMENTED OUT AS REQUESTED)
-  // When ready to connect to real backend endpoints, uncomment the lines below:
+  // API INTEGRATION (COMMENTED OUT AS REQUESTED)
+  //
+  // For Photography & Videography tab:
+  // API Endpoint: /event-order?status=cancelled&paymentStatus=Unpaid|Paid
+  //
+  // Uncomment the lines below to activate live API data fetching:
   // ===========================================================================
-  /*
   const [everOrderMakeRefund] = useEverOrderMakeRefundMutation();
-  const [gearOrderMakeRefund] = useGearOrderMakeRefundMutation();
-  const [workshopOrderMakeRefund] = useWorkshopOrderMakeRefundMutation();
+  // const [gearOrderMakeRefund] = useGearOrderMakeRefundMutation();
+  // const [workshopOrderMakeRefund] = useWorkshopOrderMakeRefundMutation();
 
-  const queryType =
-    activeTab === "professional"
-      ? "professional"
-      : activeTab === "gear"
-        ? "gear"
-        : "workshop";
-
-  const { data, isFetching } = useGetRefundManagementQuery(
+  // 1. Live Query for Photography & Videography (/event-order?status=cancelled)
+  const {
+    data: eventOrdersData,
+    isFetching: isEventOrdersFetching,
+  } = useGetCancelledEventOrdersQuery(
     {
-      limit,
       page,
+      limit,
       searchTerm: searchText,
-      type: queryType,
-      refundStatus: refundFilter,
+      ...(paymentFilter ? { paymentStatus: paymentFilter } : {}),
     },
-    { refetchOnMountOrArgChange: true, pollingInterval: 600000 }
+    {
+      refetchOnMountOrArgChange: true,
+      skip: activeTab !== "professional",
+      pollingInterval: 600000,
+    }
   );
 
-  const total = data?.data?.meta?.total || 0;
-  const orders = data?.data?.orders || [];
+  const eventOrdersList: IRefundManagement[] = eventOrdersData?.data || [];
+  const eventOrdersTotal: number = eventOrdersData?.meta?.total || 0;
+
+  /*
+  // 2. Query for Gear and Workshop tabs (/users/refund-orders) - keep commented until backend ready
+  const {
+    data: generalRefundData,
+    isFetching: isGeneralRefundFetching,
+  } = useGetRefundManagementQuery(
+    {
+      page,
+      limit,
+      searchTerm: searchText,
+      type: activeTab,
+      paymentStatus: paymentFilter,
+    },
+    {
+      refetchOnMountOrArgChange: true,
+      skip: activeTab === "professional",
+      pollingInterval: 600000,
+    }
+  );
   */
   // ===========================================================================
 
-  // Filtered mock data handling for interactive preview:
+  // Interactive mock data filtering for immediate preview and testing
   const filteredData = useMemo(() => {
     const searchLower = searchText.toLowerCase().trim();
 
@@ -389,17 +299,16 @@ const AdminRefundManagement = () => {
         const matchesSearch =
           !searchLower ||
           item.orderId?.toLowerCase().includes(searchLower) ||
+          item.title?.toLowerCase().includes(searchLower) ||
           item.userId?.name?.toLowerCase().includes(searchLower) ||
           item.serviceProviderId?.name?.toLowerCase().includes(searchLower);
 
-        const isRefunded =
-          item.refundStatus === "refunded" ||
-          item.paymentStatus === "Refunded";
+        const isPaid = item.paymentStatus?.toLowerCase() === "paid";
 
         const matchesFilter =
-          !refundFilter ||
-          (refundFilter === "refunded" && isRefunded) ||
-          (refundFilter === "pending" && !isRefunded);
+          !paymentFilter ||
+          (paymentFilter.toLowerCase() === "paid" && isPaid) ||
+          (paymentFilter.toLowerCase() === "unpaid" && !isPaid);
 
         return matchesSearch && matchesFilter;
       });
@@ -414,14 +323,12 @@ const AdminRefundManagement = () => {
           item.sellerId?.name?.toLowerCase().includes(searchLower) ||
           item.gearMarketplaceId?.name?.toLowerCase().includes(searchLower);
 
-        const isRefunded =
-          item.refundStatus === "refunded" ||
-          item.paymentStatus === "Refunded";
+        const isPaid = item.paymentStatus?.toLowerCase() === "paid";
 
         const matchesFilter =
-          !refundFilter ||
-          (refundFilter === "refunded" && isRefunded) ||
-          (refundFilter === "pending" && !isRefunded);
+          !paymentFilter ||
+          (paymentFilter.toLowerCase() === "paid" && isPaid) ||
+          (paymentFilter.toLowerCase() === "unpaid" && !isPaid);
 
         return matchesSearch && matchesFilter;
       });
@@ -436,19 +343,19 @@ const AdminRefundManagement = () => {
         item.instructorId?.name?.toLowerCase().includes(searchLower) ||
         item.workshopId?.title?.toLowerCase().includes(searchLower);
 
-      const isRefunded =
+      const isPaid =
         item.refundStatus === "refunded" ||
         item.refundPayment?.status === "received" ||
         item.refundPayment?.status === "refunded";
 
       const matchesFilter =
-        !refundFilter ||
-        (refundFilter === "refunded" && isRefunded) ||
-        (refundFilter === "pending" && !isRefunded);
+        !paymentFilter ||
+        (paymentFilter.toLowerCase() === "paid" && isPaid) ||
+        (paymentFilter.toLowerCase() === "unpaid" && !isPaid);
 
       return matchesSearch && matchesFilter;
     });
-  }, [activeTab, profRefunds, gearRefunds, workshopRefunds, searchText, refundFilter]);
+  }, [activeTab, profRefunds, gearRefunds, workshopRefunds, searchText, paymentFilter]);
 
   const total = filteredData.length;
   const isFetching = false;
@@ -466,52 +373,34 @@ const AdminRefundManagement = () => {
   const handleTabChange = (tab: ActiveTab) => {
     setActiveTab(tab);
     setPage(1);
-    setRefundFilter("");
+    setPaymentFilter("");
   };
 
   const handleRefund = async () => {
     if (!currentRecord) return;
 
-    // =========================================================================
-    // API MUTATION CALL (COMMENTED OUT AS REQUESTED)
-    // Uncomment the code below when connecting with live backend endpoints:
-    // =========================================================================
-    /*
-    let res;
     if (activeTab === "professional") {
-      res = await tryCatchWrapper(
+      const res = await tryCatchWrapper(
         everOrderMakeRefund,
         { params: currentRecord._id },
         "Processing refund..."
       );
-    } else if (activeTab === "gear") {
-      res = await tryCatchWrapper(
-        gearOrderMakeRefund,
-        { params: currentRecord._id },
-        "Processing refund..."
-      );
-    } else {
-      res = await tryCatchWrapper(
-        workshopOrderMakeRefund,
-        { params: currentRecord._id },
-        "Processing refund..."
-      );
+      if (res?.success) {
+        handleCancel();
+        return;
+      }
     }
-    if (res?.success) handleCancel();
-    */
-    // =========================================================================
 
-    // Local state fallback update for testing:
+    // Local state fallback update for instant UI feedback / non-active tabs:
     if (activeTab === "professional") {
       setProfRefunds((prev) =>
         prev.map((item) =>
           item._id === currentRecord._id
             ? {
-                ...item,
-                status: "refunded",
-                refundStatus: "refunded",
-                paymentStatus: "Refunded",
-              }
+              ...item,
+              paymentStatus: "Paid",
+              refundStatus: "refunded",
+            }
             : item
         )
       );
@@ -520,11 +409,10 @@ const AdminRefundManagement = () => {
         prev.map((item) =>
           item._id === currentRecord._id
             ? {
-                ...item,
-                status: "refunded",
-                refundStatus: "refunded",
-                paymentStatus: "Refunded",
-              }
+              ...item,
+              paymentStatus: "Paid",
+              refundStatus: "refunded",
+            }
             : item
         )
       );
@@ -533,14 +421,14 @@ const AdminRefundManagement = () => {
         prev.map((item) =>
           item._id === currentRecord._id
             ? {
-                ...item,
-                refundStatus: "refunded",
-                refundPayment: {
-                  status: "received",
-                  amount: item.refundAmount || item.workshopId?.price || 0,
-                  refundedAt: new Date().toISOString(),
-                },
-              }
+              ...item,
+              refundStatus: "refunded",
+              refundPayment: {
+                status: "received",
+                amount: item.refundAmount || item.workshopId?.price || 0,
+                refundedAt: new Date().toISOString(),
+              },
+            }
             : item
         )
       );
@@ -567,14 +455,14 @@ const AdminRefundManagement = () => {
         name=""
         options={[
           { label: "All", value: "" },
-          { label: "Refunded", value: "refunded" },
-          { label: "Pending", value: "pending" },
+          { label: "Unpaid", value: "Unpaid" },
+          { label: "Paid", value: "Paid" },
         ]}
         onChange={(val) => {
-          setRefundFilter(val);
+          setPaymentFilter(val);
           setPage(1);
         }}
-        value={refundFilter}
+        value={paymentFilter}
         selectClassName="!w-[130px]"
       />
 
@@ -586,12 +474,16 @@ const AdminRefundManagement = () => {
             value: "professional",
             content: (
               <AdminAllRefundManagementTable
-                data={filteredData as IRefundManagement[]}
-                loading={isFetching}
+                data={
+                  eventOrdersData?.data
+                    ? (eventOrdersList as IRefundManagement[])
+                    : (filteredData as IRefundManagement[])
+                }
+                loading={isEventOrdersFetching}
                 showViewRefundModal={showRefundModal}
                 setPage={setPage}
                 page={page}
-                total={total}
+                total={eventOrdersData ? eventOrdersTotal : total}
                 limit={limit}
               />
             ),

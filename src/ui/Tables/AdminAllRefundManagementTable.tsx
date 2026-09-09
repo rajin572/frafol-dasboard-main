@@ -31,10 +31,9 @@ const AdminAllRefundManagementTable: React.FC<AdminAllRefundManagementTableProps
     },
     {
       title: "Client Name",
-      dataIndex: "userId",
       key: "clientName",
       render: (_: unknown, record: IRefundManagement) =>
-        record?.userId?.name || record?.clientId?.name || "N/A",
+        record?.userId?.name || record?.name || "N/A",
     },
     {
       title: "Bank Name",
@@ -42,7 +41,7 @@ const AdminAllRefundManagementTable: React.FC<AdminAllRefundManagementTableProps
       render: (_: unknown, record: IRefundManagement) =>
         record?.userId?.profileId?.bankName ||
         record?.serviceProviderId?.profileId?.bankName ||
-        "N/A",
+        "—",
     },
     {
       title: "Bank Account Number",
@@ -50,11 +49,10 @@ const AdminAllRefundManagementTable: React.FC<AdminAllRefundManagementTableProps
       render: (_: unknown, record: IRefundManagement) =>
         record?.userId?.profileId?.accountNumber ||
         record?.serviceProviderId?.profileId?.accountNumber ||
-        "N/A",
+        "—",
     },
     {
       title: "Photographer/Videographer",
-      dataIndex: "serviceProviderId",
       key: "photographer_videographer",
       render: (_: unknown, record: IRefundManagement) =>
         record?.serviceProviderId?.name || "N/A",
@@ -67,38 +65,47 @@ const AdminAllRefundManagementTable: React.FC<AdminAllRefundManagementTableProps
         text ? text.charAt(0).toUpperCase() + text.slice(1) : "Direct",
     },
     {
-      title: "Refund Amount",
-      dataIndex: "refundAmount",
-      key: "refundAmount",
-      render: (_: unknown, record: IRefundManagement) =>
-        `${record?.refundAmount ?? record?.price ?? 0}€`,
+      title: "Service Type",
+      dataIndex: "serviceType",
+      key: "serviceType",
+      render: (text: string) =>
+        text ? text.charAt(0).toUpperCase() + text.slice(1) : "—",
     },
     {
-      title: "Refund Date",
-      dataIndex: "refundDate",
-      key: "refundDate",
-      render: (date: string) =>
-        date ? new Date(date).toLocaleDateString() : "N/A",
+      title: "Amount",
+      key: "amount",
+      render: (_: unknown, record: IRefundManagement) => {
+        if (record?.totalPrice) return `${record.totalPrice}€`;
+        if (record?.priceWithServiceFee) return `${record.priceWithServiceFee}€`;
+        if (record?.price) return `${record.price}€`;
+        if (record?.budget_range) return record.budget_range;
+        if (record?.refundAmount) return `${record.refundAmount}€`;
+        return "N/A";
+      },
     },
     {
-      title: "Refund Status",
-      dataIndex: "refundStatus",
-      key: "refundStatus",
-      render: (status: string) => {
-        const isRefunded = status === "refunded" || status === "completed";
-        const isDeclined = status === "declined";
+      title: "Cancelled Date",
+      key: "cancelledDate",
+      render: (_: unknown, record: IRefundManagement) => {
+        const dateStr =
+          record?.statusTimestamps?.cancelledAt ||
+          record?.refundDate ||
+          record?.updatedAt ||
+          record?.createdAt;
+        return dateStr ? new Date(dateStr).toLocaleDateString() : "N/A";
+      },
+    },
+    {
+      title: "Cancel Reason",
+      key: "cancelReason",
+      render: (_: unknown, record: IRefundManagement) => {
+        const reason = record?.cancelReason || record?.reason || "Cancelled";
         return (
-          <span
-            className={`${
-              isRefunded
-                ? "text-success"
-                : isDeclined
-                ? "text-error"
-                : "text-warning"
-            } font-semibold capitalize`}
-          >
-            {status || "Pending"}
-          </span>
+          <Tooltip title={reason}>
+            <span className="truncate max-w-[130px] inline-block text-sm text-gray-500">
+              {reason}
+            </span>
+          </Tooltip>
         );
       },
     },
@@ -107,13 +114,12 @@ const AdminAllRefundManagementTable: React.FC<AdminAllRefundManagementTableProps
       dataIndex: "paymentStatus",
       key: "paymentStatus",
       render: (status: string) => {
-        const isRefunded =
-          status === "Refunded" || status === "Paid" || status === "completed";
+        const isPaid = status?.toLowerCase() === "paid" || status === "Refunded";
         return (
           <span
-            className={`${isRefunded ? "text-success" : "text-error"} font-semibold`}
+            className={`${isPaid ? "text-success" : "text-error"} font-semibold`}
           >
-            {isRefunded ? "Refunded" : "Pending"}
+            {isPaid ? "Paid" : "Unpaid"}
           </span>
         );
       },
@@ -122,13 +128,13 @@ const AdminAllRefundManagementTable: React.FC<AdminAllRefundManagementTableProps
       title: "Action",
       key: "action",
       render: (_: unknown, record: IRefundManagement) => {
-        const isAlreadyRefunded =
-          record?.refundStatus === "refunded" ||
+        const isAlreadyPaidOrRefunded =
+          record?.paymentStatus?.toLowerCase() === "paid" ||
           record?.paymentStatus === "Refunded";
 
         return (
           <div>
-            {!isAlreadyRefunded ? (
+            {!isAlreadyPaidOrRefunded ? (
               <Tooltip placement="right" title="Process Refund">
                 <ReuseButton
                   variant="secondary"

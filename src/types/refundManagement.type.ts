@@ -1,8 +1,17 @@
 export interface IUserBasic {
   _id: string;
   name: string;
+  sureName?: string;
   email: string;
   profileImage?: string;
+  role?: string;
+  switchRole?: string;
+  address?: string;
+  town?: string;
+  zipCode?: string;
+  ico?: string;
+  dic?: string;
+  ic_dph?: string;
   profileId?: {
     _id?: string;
     about?: string;
@@ -25,6 +34,24 @@ export interface IStatusTimestamps {
   refundRequestedAt?: string;
   refundedAt?: string | null;
   cancelledAt?: string | null;
+  cancelRequestAt?: string;
+  cancelRequestDeclinedAt?: string;
+}
+
+export interface IStatusHistory {
+  status: string;
+  reason?: string;
+  changedAt: string;
+  _id: string;
+}
+
+export interface IPackageBasic {
+  _id: string;
+  title: string;
+  description: string;
+  vatAmount: number;
+  price: number;
+  mainPrice: number;
 }
 
 export interface IGearMarketplace {
@@ -55,36 +82,52 @@ export interface IRefundManagement {
   _id: string;
   orderId: string;
   refundId?: string;
-  title?: string; // for service orders
-  userId?: IUserBasic; // client
+  title?: string;
+  userId?: IUserBasic;
   clientId?: IUserBasic;
-  serviceProviderId?: IUserBasic; // only for service orders
-  sellerId?: IUserBasic; // only for gear orders
-  orderType: "direct" | "gear" | "workshop";
-  serviceType?: string; // for service orders
-  date?: string; // service order
-  time?: string; // service order
-  location?: string; // service order
+  serviceProviderId?: IUserBasic;
+  sellerId?: IUserBasic;
+  orderType: "custom" | "direct" | "gear" | "workshop" | string;
+  serviceType?: string;
+  date?: string;
+  time?: string;
+  location?: string;
   price?: number;
   priceWithServiceFee?: number;
   vatAmount?: number;
-  totalPrice?: number; // optional for gear
-  refundAmount: number;
+  totalPrice?: number;
+  budget_range?: string;
+  duration?: string;
+  refundAmount?: number;
   reason?: string;
-  packageId?: string;
+  cancelReason?: string;
+  cancelRequestedBy?: string;
+  cancelApprovalDate?: string;
+  cancelApprovalBy?: string;
+  packageId?: string | IPackageBasic;
   deliveryDate?: string;
+  lastDeliveryDate?: string;
   refundDate?: string;
-  status: string; // e.g. "pending" | "refunded" | "declined"
-  paymentStatus: "Paid" | "Unpaid" | "Refunded" | "pending" | "completed";
-  refundStatus: "pending" | "refunded" | "declined" | "completed" | "processing";
+  status: "cancelled" | "pending" | "refunded" | "declined" | string;
+  paymentStatus: "Paid" | "Unpaid" | "Refunded" | "pending" | "completed" | string;
+  refundStatus?: "pending" | "refunded" | "declined" | "completed" | "processing";
   isDeleted?: boolean;
   statusTimestamps?: IStatusTimestamps;
-  gearMarketplaceId?: IGearMarketplace; // only for gear orders
+  statusHistory?: IStatusHistory[];
+  gearMarketplaceId?: IGearMarketplace;
   shippingAddress?: string;
+  streetAddress?: string;
   postCode?: string;
   town?: string;
+  zipCode?: string;
+  country?: string;
   mobileNumber?: string;
   email?: string;
+  name?: string;
+  description?: string;
+  couponDiscount?: number;
+  isRegisterAsCompany?: boolean;
+  paymentId?: string;
   createdAt: string;
   updatedAt: string;
   orderStatus?: string;
