@@ -1,0 +1,44 @@
+export interface IUser {
+  _id: string;
+  profileId: {
+    _id: string;
+    about: string;
+  };
+  name: string;
+  sureName: string;
+  companyName: string;
+  email: string;
+  profileImage?: string;
+  role: string;
+  switchRole: string;
+  gallery: string[];
+  address: string;
+  town: string;
+  country: string;
+  ico?: string;
+  dic?: string;
+  ic_dph?: string;
+  rating: number;
+  totalReview: number;
+  averageRating: number;
+  photographerSpecializations: string[];
+  videographerSpecializations: string[];
+  adminVerified: "verified" | "pending" | "rejected";
+  unAvailability: string[];
+  isBlocked: boolean;
+  isDeleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+  phone?: string;
+  minHourlyRate: number;
+  maxHourlyRate: number;
+  hasActiveSubscription: boolean;
+  subscriptionExpiryDate: string | null;
+  subscriptionDays: number;
+  subscriptionId: string;
+  zipCode: string;
+  introVideo: string;
+  bannerImages: string[];
+  travelTowns: string[];
+  dateOfBirth: string;
+}
