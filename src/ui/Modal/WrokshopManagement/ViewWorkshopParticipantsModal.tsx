@@ -1,6 +1,7 @@
 import React from "react";
 import { Modal, Table } from "antd";
 import { useGetWorkshopParticipantsQuery } from "../../../redux/features/workshop/workshopApi";
+import { formatDateWithAtTime } from "../../../utils/dateFormet";
 
 interface IWorkshopParticipant {
     _id: string;
@@ -15,6 +16,10 @@ interface IWorkshopParticipant {
     town?: string;
     country?: string;
     paymentStatus?: string;
+    termsAndConditionsAccepted?: boolean;
+    earlyServiceCommencementAccepted?: boolean;
+    withdrawalRightAcknowledgementAccepted?: boolean;
+    createdAt?: string;
 }
 
 interface ViewWorkshopParticipantsModalProps {
@@ -77,6 +82,27 @@ const ViewWorkshopParticipantsModal: React.FC<ViewWorkshopParticipantsModalProps
             key: "country",
             render: (_: unknown, record: IWorkshopParticipant) =>
                 record?.country || "—",
+        },
+        {
+            title: "T&C Accepted",
+            dataIndex: "termsAndConditionsAccepted",
+            key: "termsAndConditionsAccepted",
+            render: (_: unknown, record: IWorkshopParticipant) =>
+                record?.termsAndConditionsAccepted ? `Yes (${formatDateWithAtTime(record?.createdAt)})` : "No",
+        },
+        {
+            title: "Early Service Accepted",
+            dataIndex: "earlyServiceCommencementAccepted",
+            key: "earlyServiceCommencementAccepted",
+            render: (_: unknown, record: IWorkshopParticipant) =>
+                record?.earlyServiceCommencementAccepted ? `Yes (${formatDateWithAtTime(record?.createdAt)})` : "No",
+        },
+        {
+            title: "Withdrawal Right Accepted",
+            dataIndex: "withdrawalRightAcknowledgementAccepted",
+            key: "withdrawalRightAcknowledgementAccepted",
+            render: (_: unknown, record: IWorkshopParticipant) =>
+                record?.withdrawalRightAcknowledgementAccepted ? `Yes (${formatDateWithAtTime(record?.createdAt)})` : "No",
         },
     ];
 

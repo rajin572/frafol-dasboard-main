@@ -101,6 +101,9 @@ interface IEventOrder {
   statusHistory: IStatusHistory[]; // History of status changes
   extensionRequests: IExtensionRequest[]; // Any extension requests for the order
   paymentStatus: string; // Status of the payment (e.g., "paid", "unpaid")
+  termsAndConditionsAccepted?: boolean;
+  earlyServiceCommencementAccepted?: boolean;
+  withdrawalRightAcknowledgementAccepted?: boolean;
   isDeleted: boolean; // Whether the order is deleted
   createdAt: string;
   updatedAt: string;

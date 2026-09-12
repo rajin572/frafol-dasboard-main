@@ -34,3 +34,9 @@ export const formetTime = (date: string | Date | undefined): string => {
 
   return messageDate.format("HH:mm"); // 24-hour format
 };
+
+export const formatDateWithAtTime = (date: string | Date | undefined): string => {
+  if (!date) return "";
+  const messageDate = dayjs(date);
+  return messageDate.format("D/M/YYYY [at] HH:mm");
+};

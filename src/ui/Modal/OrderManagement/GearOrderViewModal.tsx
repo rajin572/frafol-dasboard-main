@@ -7,6 +7,7 @@ import { pdf } from "@react-pdf/renderer";
 import { saveAs } from "file-saver";
 import { toast } from "sonner";
 import InvoiceGearOrderFromAdminSide from "../../../utils/InvoiceGearOrderFromAdminSide";
+import { formatDateWithAtTime } from "../../../utils/dateFormet";
 
 interface GearOrderViewModalProps {
   isViewModalVisible: boolean;
@@ -139,6 +140,15 @@ const GearOrderViewModal: React.FC<GearOrderViewModalProps> = ({
               </p>
             </div>
           </div>
+        </div>
+
+        {/* Accepted Terms */}
+        <div className="bg-white rounded-lg border border-[#E1E1E1] p-4">
+          <h3 className="font-semibold mb-2">Accepted Terms</h3>
+          <p className="text-sm ">
+            <span className="font-semibold">Terms and Conditions Accepted: </span>
+            {currentRecord?.termsAndConditionsAccepted ? `Yes (${formatDateWithAtTime(currentRecord?.createdAt)})` : "No"}
+          </p>
         </div>
 
         {/* Shipping Method */}

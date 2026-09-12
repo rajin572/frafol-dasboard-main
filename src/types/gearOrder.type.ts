@@ -80,6 +80,7 @@ interface IGearOrder {
   };
   companyAddress: string;
   deliveryNote: string;
+  termsAndConditionsAccepted?: boolean;
   isDeleted: boolean;
   createdAt: string;
   updatedAt: string;

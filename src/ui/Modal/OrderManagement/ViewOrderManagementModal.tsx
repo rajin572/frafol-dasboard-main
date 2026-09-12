@@ -6,7 +6,7 @@ import { FaClock } from "react-icons/fa6";
 import { IEventOrder } from "../../../types";
 import { getImageUrl } from "../../../helpers/config/envConfig";
 import { AllImages } from "../../../../public/images/AllImages";
-import { formatDate, formetTime } from "../../../utils/dateFormet";
+import { formatDate, formetTime, formatDateWithAtTime } from "../../../utils/dateFormet";
 import { budgetLabels } from "../../../utils/budgetLabels";
 import ReuseButton from "../../Button/ReuseButton";
 import { pdf } from "@react-pdf/renderer";
@@ -247,6 +247,25 @@ const ViewOrderManagementModal: React.FC<ViewOrderManagementModalProps> = ({
               currentRecord?.budget_range}
           </p>
 
+        </div>
+
+        {/* Accepted Terms */}
+        <div className="mb-4">
+          <h4 className="text-base sm:text-lg lg:text-xl xl:text-2xl text-secondary-color font-bold mb-2">
+            Accepted Terms
+          </h4>
+          <p className="text-xs sm:text-sm lg:text-base">
+            <span className="font-semibold">Terms and Conditions Accepted: </span>
+            {currentRecord?.termsAndConditionsAccepted ? `Yes (${formatDateWithAtTime(currentRecord?.createdAt)})` : "No"}
+          </p>
+          <p className="text-xs sm:text-sm lg:text-base">
+            <span className="font-semibold">Early Service Commencement Accepted: </span>
+            {currentRecord?.earlyServiceCommencementAccepted ? `Yes (${formatDateWithAtTime(currentRecord?.createdAt)})` : "No"}
+          </p>
+          <p className="text-xs sm:text-sm lg:text-base">
+            <span className="font-semibold">Withdrawal Right Acknowledgement Accepted: </span>
+            {currentRecord?.withdrawalRightAcknowledgementAccepted ? `Yes (${formatDateWithAtTime(currentRecord?.createdAt)})` : "No"}
+          </p>
         </div>
 
 
