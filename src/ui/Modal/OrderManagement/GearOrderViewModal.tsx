@@ -151,6 +151,39 @@ const GearOrderViewModal: React.FC<GearOrderViewModalProps> = ({
           </p>
         </div>
 
+        {/* Company Details */}
+        {currentRecord?.loginAsCompany && (
+          <div className="bg-white rounded-lg border border-[#E1E1E1] p-4">
+            <h3 className="font-semibold mb-2">Company Details</h3>
+            <div className="space-y-1 text-sm text-gray-600">
+              <p>
+                <span className="font-semibold text-black">Company Name:</span>{" "}
+                {currentRecord?.companyName || "N/A"}
+              </p>
+              <p>
+                <span className="font-semibold text-black">Address:</span>{" "}
+                {currentRecord?.companyAddress}
+                {currentRecord?.companyTown ? `, ${currentRecord.companyTown}` : ""}
+                {currentRecord?.companyPostCode
+                  ? `, ${currentRecord.companyPostCode}`
+                  : ""}
+              </p>
+              <p>
+                <span className="font-semibold text-black">ICO:</span>{" "}
+                {currentRecord?.ico || "N/A"}
+              </p>
+              <p>
+                <span className="font-semibold text-black">DIC:</span>{" "}
+                {currentRecord?.dic || "N/A"}
+              </p>
+              <p>
+                <span className="font-semibold text-black">IC DPH:</span>{" "}
+                {currentRecord?.ic_dph || "N/A"}
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Shipping Method */}
         <div className="bg-white rounded-lg border border-[#E1E1E1] p-4">
           <h3 className="font-semibold mb-2">Preferred Shipping Method</h3>
@@ -163,7 +196,11 @@ const GearOrderViewModal: React.FC<GearOrderViewModalProps> = ({
         {/* Shipping Address */}
         <div className="bg-white rounded-lg border border-[#E1E1E1] p-4">
           <h3 className="font-semibold mb-2">Shipping Address</h3>
-          <p className="text-sm ">{currentRecord?.shippingAddress}</p>
+          <p className="text-sm ">
+            {currentRecord?.shippingAddress}
+            {currentRecord?.town ? `, ${currentRecord.town}` : ""}
+            {currentRecord?.postCode ? `, ${currentRecord.postCode}` : ""}
+          </p>
         </div>
 
         {/* Delivery Note */}
