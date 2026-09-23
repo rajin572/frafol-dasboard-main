@@ -136,13 +136,12 @@ const SubscriptionTransactionViewModal: React.FC<Props> = ({
           <div className="flex items-center justify-between border-b border-[#E1E1E1] pb-2">
             <span className="font-semibold">Status:</span>
             <span
-              className={`capitalize font-medium ${
-                currentRecord.paymentStatus === "completed"
-                  ? "text-green-600"
-                  : currentRecord.paymentStatus === "failed"
-                    ? "text-red-600"
-                    : "text-yellow-600"
-              }`}
+              className={`capitalize font-medium ${currentRecord.paymentStatus === "completed"
+                ? "text-green-600"
+                : currentRecord.paymentStatus === "failed"
+                  ? "text-red-600"
+                  : "text-yellow-600"
+                }`}
             >
               {currentRecord.paymentStatus}
             </span>
@@ -151,7 +150,7 @@ const SubscriptionTransactionViewModal: React.FC<Props> = ({
           <div className="flex items-center justify-between font-bold">
             <span className="text-secondary-color">Amount:</span>
             <span className="text-success">
-              ${currentRecord.amount?.toFixed(2)}
+              {currentRecord.amount?.toFixed(2)}€
             </span>
           </div>
         </div>

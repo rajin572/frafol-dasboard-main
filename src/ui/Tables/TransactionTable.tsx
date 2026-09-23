@@ -61,6 +61,42 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
       render: (type: string) => <span className="capitalize">{type}</span>,
     },
     {
+      title: "Title",
+      key: "title",
+      render: (_: any, record: ITransaction) => {
+        if (
+          record.paymentType === "event" &&
+          record.eventOrderId &&
+          typeof record.eventOrderId !== "string"
+        ) {
+          return (
+            <p className="line-clamp-1 max-w-[200px]">
+              {record.eventOrderId.title || "—"}
+            </p>
+          );
+        }
+        if (record.paymentType === "gear" && record.gear) {
+          return (
+            <p className="line-clamp-1 max-w-[200px]">
+              {record.gear.name || "—"}
+            </p>
+          );
+        }
+        if (
+          record.paymentType === "workshop" &&
+          record.workshopId &&
+          typeof record.workshopId !== "string"
+        ) {
+          return (
+            <p className="line-clamp-1 max-w-[200px]">
+              {record.workshopId.title || "—"}
+            </p>
+          );
+        }
+        return "—";
+      },
+    },
+    {
       title: "Method",
       dataIndex: "paymentMethod",
       key: "method",
@@ -85,10 +121,10 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
           typeof record.eventOrderId !== "string"
         ) {
           const fee = (record.eventOrderId.priceWithServiceFee || 0) - (record.eventOrderId.price || 0);
-          return `€${fee.toFixed(2)}`;
+          return `${fee.toFixed(2)}€`;
         }
         if (record.paymentType === "gear" && record.gear) {
-          return `€${record.gear.platformCommission.toFixed(2)}`;
+          return `${record.gear.platformCommission.toFixed(2)}€`;
         }
         if (
           record.paymentType === "workshop" &&
@@ -97,7 +133,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
         ) {
           const ws = record.workshopId;
           const fee = ws.mainPrice - ws.price - ws.vatAmount;
-          return `€${fee.toFixed(2)}`;
+          return `${fee.toFixed(2)}€`;
         }
         return "—";
       },
@@ -111,19 +147,19 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
           record.eventOrderId &&
           typeof record.eventOrderId !== "string"
         ) {
-          return `€${(record.eventOrderId.totalPrice || 0).toFixed(2)}`;
+          return `${(record.eventOrderId.totalPrice || 0).toFixed(2)}€`;
         }
         if (record.paymentType === "gear" && record.gear) {
-          return `€${record.gear.mainPrice.toFixed(2)}`;
+          return `${record.gear.mainPrice.toFixed(2)}€`;
         }
         if (
           record.paymentType === "workshop" &&
           record.workshopId &&
           typeof record.workshopId !== "string"
         ) {
-          return `€${record.workshopId.mainPrice.toFixed(2)}`;
+          return `${record.workshopId.mainPrice.toFixed(2)}€`;
         }
-        return `€${(record?.amount || 0).toFixed(2)}`;
+        return `${(record?.amount || 0).toFixed(2)}€`;
       },
     },
     {
