@@ -139,6 +139,7 @@ const ViewWorkshopManagementModal: React.FC<ViewWorkshopManagementModalProps> = 
                 handleCancel={() => setIsParticipantsModalVisible(false)}
                 workshopId={currentRecord?._id}
                 workshopTitle={currentRecord?.title}
+                workshop={currentRecord}
             />
         </Modal>
     );

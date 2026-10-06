@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Modal } from "antd";
 import { FaCalendarAlt, FaMapMarkerAlt } from "react-icons/fa";
@@ -8,11 +7,9 @@ import { getImageUrl } from "../../../helpers/config/envConfig";
 import { AllImages } from "../../../../public/images/AllImages";
 import { formatDate, formetTime, formatDateWithAtTime } from "../../../utils/dateFormet";
 import { budgetLabels } from "../../../utils/budgetLabels";
-import ReuseButton from "../../Button/ReuseButton";
-import { pdf } from "@react-pdf/renderer";
-import { saveAs } from "file-saver";
-import { toast } from "sonner";
-import InvoiceDocumentFromAdminSide from "../../../utils/InvoiceDocumentFromAdminSide";
+import InvoiceDownloadButtons from "../../Button/InvoiceDownloadButtons";
+import { buildEventInvoices } from "../../../utils/invoice/eventInvoices";
+import { isOrderPaid } from "../../../utils/invoice/invoiceStatus";
 
 interface ViewOrderManagementModalProps {
   isViewModalVisible: boolean;
@@ -29,26 +26,12 @@ const ViewOrderManagementModal: React.FC<ViewOrderManagementModalProps> = ({
 
   console.log(currentRecord)
 
-  const handleProfessionalInvoiceDownload = (currentRecord: IEventOrder) => {
-    const toastId = toast.loading("Downloading...", {
-      duration: 2000,
-    });
-    // Generate the PDF using @react-pdf/renderer's pdf function
-    pdf(
-      <InvoiceDocumentFromAdminSide
-        currentRecord={currentRecord as IEventOrder}
-      />
-    )
-      .toBlob()
-      .then((blob: any) => {
-        // Use file-saver to trigger the download
-        saveAs(blob, `${currentRecord.orderId}-invoice.pdf`);
-        toast.success("Downloaded successfully!", { id: toastId });
-      })
-      .catch((_error: any) => {
-        toast.error("Download failed", { id: toastId });
-      });
-  };
+  // Payment invoices once the order is paid, final invoices once it is delivered.
+  const showPaymentInvoices = isOrderPaid(
+    currentRecord?.paymentStatus,
+    currentRecord?.paidAt
+  );
+  const showFinalInvoices = currentRecord?.status === "delivered";
 
   const serviceFeeAmount: number = (currentRecord as any)?.priceWithServiceFee - (currentRecord as any)?.price
 
@@ -298,17 +281,17 @@ const ViewOrderManagementModal: React.FC<ViewOrderManagementModalProps> = ({
               </div>
             </div>
           )}
-        {currentRecord?.status === "delivered" ? (
-          <div className="mt-5 flex flex-col items-center gap-5">
-            <ReuseButton
-              onClick={() =>
-                handleProfessionalInvoiceDownload(currentRecord as IEventOrder)
-              }
-              variant="secondary"
-              className="!w-fit"
-            >
-              Download Invoice with Admin
-            </ReuseButton>
+        {currentRecord && (showPaymentInvoices || showFinalInvoices) ? (
+          <div className="mb-4">
+            <h4 className="text-base sm:text-lg lg:text-xl xl:text-2xl text-secondary-color font-bold mb-2">
+              Invoices
+            </h4>
+            <InvoiceDownloadButtons
+              orderId={currentRecord.orderId}
+              getInvoices={() => buildEventInvoices(currentRecord)}
+              showPayment={showPaymentInvoices}
+              showFinal={showFinalInvoices}
+            />
           </div>
         ) : null}
       </div>

@@ -1,11 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Modal } from "antd";
-import { pdf } from "@react-pdf/renderer";
-import { saveAs } from "file-saver";
-import { toast } from "sonner";
-import ReuseButton from "../../Button/ReuseButton";
+import SubscriptionInvoiceButton from "../../Button/SubscriptionInvoiceButton";
 import { ITransaction } from "../../../types";
-import InvoiceFrafolChoiceFromClientSide from "../../../utils/InvoiceFrafolChoiceFromClientSide";
 
 interface Props {
   isViewModalVisible: boolean;
@@ -28,61 +23,6 @@ const SubscriptionTransactionViewModal: React.FC<Props> = ({
       hour: "2-digit",
       minute: "2-digit",
     });
-
-  const handleInvoiceDownload = () => {
-    const days = currentRecord.subscriptionDays ?? 365;
-
-    const expiryDate = new Date(currentRecord.createdAt);
-    expiryDate.setDate(expiryDate.getDate() + days);
-
-    const myData: any = {
-      name: currentRecord.userId?.name || "",
-      sureName: "",
-      email: currentRecord.userId?.email || "",
-      companyName: "",
-      address: "",
-      town: "",
-      country: "",
-      ico: "",
-      dic: "",
-      ic_dph: "",
-      phone: "",
-    };
-
-    const subscriptionData: any = {
-      subscriptionExpiryDate: expiryDate.toISOString(),
-    };
-
-    const pack: any = {
-      _id: currentRecord._id,
-      title:
-        days >= 365
-          ? "Annual Plan"
-          : days >= 180
-            ? "Semi-Annual Plan"
-            : `${days}-Day Plan`,
-      price: currentRecord.amount,
-      duration: days,
-    };
-
-    const toastId = toast.loading("Downloading...", { duration: 2000 });
-    pdf(
-      <InvoiceFrafolChoiceFromClientSide
-        myData={myData}
-        subscriptionData={subscriptionData}
-        pack={pack}
-      />
-    )
-      .toBlob()
-      .then((blob: any) => {
-        saveAs(
-          blob,
-          `subscription-invoice-${currentRecord._id.slice(-8)}.pdf`
-        );
-        toast.success("Downloaded successfully!", { id: toastId });
-      })
-      .catch(() => toast.error("Download failed", { id: toastId }));
-  };
 
   return (
     <Modal
@@ -156,13 +96,7 @@ const SubscriptionTransactionViewModal: React.FC<Props> = ({
         </div>
 
         <div className="flex items-center justify-center mt-6">
-          <ReuseButton
-            variant="secondary"
-            className="!px-5 !py-4 !w-fit"
-            onClick={handleInvoiceDownload}
-          >
-            Download Invoice
-          </ReuseButton>
+          <SubscriptionInvoiceButton transaction={currentRecord} />
         </div>
       </div>
     </Modal>

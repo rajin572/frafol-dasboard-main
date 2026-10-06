@@ -1,13 +1,11 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Modal } from "antd";
 import { getImageUrl } from "../../../helpers/config/envConfig";
 import { AllImages } from "../../../../public/images/AllImages";
 import { IGearOrder } from "../../../types";
-import { pdf } from "@react-pdf/renderer";
-import { saveAs } from "file-saver";
-import { toast } from "sonner";
-import InvoiceGearOrderFromAdminSide from "../../../utils/InvoiceGearOrderFromAdminSide";
 import { formatDateWithAtTime } from "../../../utils/dateFormet";
+import InvoiceDownloadButtons from "../../Button/InvoiceDownloadButtons";
+import { buildGearInvoices } from "../../../utils/invoice/gearInvoices";
+import { isOrderPaid } from "../../../utils/invoice/invoiceStatus";
 
 interface GearOrderViewModalProps {
   isViewModalVisible: boolean;
@@ -20,25 +18,12 @@ const GearOrderViewModal: React.FC<GearOrderViewModalProps> = ({
   currentRecord,
 }) => {
   const serverUrl = getImageUrl();
-  const handleAdminGearInvoiceDownload = (currentRecord: IGearOrder) => {
-    const toastId = toast.loading("Downloading...", {
-      duration: 2000,
-    });
-    // Generate the PDF using @react-pdf/renderer's pdf function
-    pdf(
-      <InvoiceGearOrderFromAdminSide currentRecord={currentRecord as IGearOrder} />
-    )
-      .toBlob()
-      .then((blob: any) => {
-        // Use file-saver to trigger the download
-        saveAs(blob, `${currentRecord.orderId}-invoice.pdf`);
-        toast.success("Downloaded successfully!", { id: toastId });
-      })
-      .catch((error: any) => {
-        console.log(error);
-        toast.error("Download failed", { id: toastId });
-      });
-  };
+  // Payment invoices once the order is paid, final invoices once it is delivered.
+  const showPaymentInvoices = isOrderPaid(
+    currentRecord?.paymentStatus,
+    currentRecord?.paidAt
+  );
+  const showFinalInvoices = currentRecord?.orderStatus === "delivered";
   return (
     <Modal
       open={isViewModalVisible}
@@ -209,18 +194,17 @@ const GearOrderViewModal: React.FC<GearOrderViewModalProps> = ({
           <p className="text-sm ">{currentRecord?.deliveryNote || "N/A"}</p>
         </div>
 
-        <div className="flex gap-4">
-          {currentRecord?.orderStatus === "delivered" && (
-            <button
-              onClick={() =>
-                handleAdminGearInvoiceDownload(currentRecord as IGearOrder)
-              }
-              className="!bg-secondary-color hover:!bg-secondary-color text-white px-4 py-2 rounded !cursor-pointer"
-            >
-              Download Invoice Admin
-            </button>
-          )}
-        </div>
+        {currentRecord && (showPaymentInvoices || showFinalInvoices) && (
+          <div className="bg-white rounded-lg border border-[#E1E1E1] p-4">
+            <h3 className="font-semibold mb-3">Invoices</h3>
+            <InvoiceDownloadButtons
+              orderId={currentRecord.orderId}
+              getInvoices={() => buildGearInvoices(currentRecord)}
+              showPayment={showPaymentInvoices}
+              showFinal={showFinalInvoices}
+            />
+          </div>
+        )}
       </div>
     </Modal>
   );

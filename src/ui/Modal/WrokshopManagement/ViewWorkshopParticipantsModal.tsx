@@ -2,31 +2,21 @@ import React from "react";
 import { Modal, Table } from "antd";
 import { useGetWorkshopParticipantsQuery } from "../../../redux/features/workshop/workshopApi";
 import { formatDateWithAtTime } from "../../../utils/dateFormet";
-
-interface IWorkshopParticipant {
-    _id: string;
-    orderId: string;
-    clientId?: {
-        _id: string;
-        name: string;
-        email: string;
-        profileImage?: string;
-    };
-    streetAddress?: string;
-    town?: string;
-    country?: string;
-    paymentStatus?: string;
-    termsAndConditionsAccepted?: boolean;
-    earlyServiceCommencementAccepted?: boolean;
-    withdrawalRightAcknowledgementAccepted?: boolean;
-    createdAt?: string;
-}
+import { IWorkshop, IWorkshopParticipant } from "../../../types";
+import InvoiceDownloadButtons from "../../Button/InvoiceDownloadButtons";
+import {
+    buildWorkshopInvoices,
+    isWorkshopCompleted,
+} from "../../../utils/invoice/workshopInvoices";
+import { isOrderPaid } from "../../../utils/invoice/invoiceStatus";
 
 interface ViewWorkshopParticipantsModalProps {
     isModalVisible: boolean;
     handleCancel: () => void;
     workshopId?: string;
     workshopTitle?: string;
+    // The workshop these participants registered for (price, VAT, date and its instructor).
+    workshop?: IWorkshop | null;
 }
 
 const ViewWorkshopParticipantsModal: React.FC<ViewWorkshopParticipantsModalProps> = ({
@@ -34,6 +24,7 @@ const ViewWorkshopParticipantsModal: React.FC<ViewWorkshopParticipantsModalProps
     handleCancel,
     workshopId,
     workshopTitle,
+    workshop,
 }) => {
     const { data, isFetching } = useGetWorkshopParticipantsQuery(
         workshopId as string,
@@ -41,6 +32,20 @@ const ViewWorkshopParticipantsModal: React.FC<ViewWorkshopParticipantsModalProps
     );
 
     const participants: IWorkshopParticipant[] = data?.data || [];
+
+    // The invoice builders read the workshop (price, VAT, date) from the participant and take
+    // the instructor separately. The participants list does not necessarily populate them, so
+    // fill both from the workshop this list belongs to.
+    const toInvoiceSource = (participant: IWorkshopParticipant) => {
+        const participantWorkshop =
+            typeof participant.workshopId === "object" ? participant.workshopId : undefined;
+        const participantInstructor =
+            typeof participant.instructorId === "object" ? participant.instructorId : undefined;
+        return {
+            record: { ...participant, workshopId: { ...participantWorkshop, ...workshop } },
+            instructor: { ...workshop?.authorId, ...participantInstructor },
+        };
+    };
 
     const participantColumns = [
         {
@@ -103,6 +108,24 @@ const ViewWorkshopParticipantsModal: React.FC<ViewWorkshopParticipantsModalProps
             key: "withdrawalRightAcknowledgementAccepted",
             render: (_: unknown, record: IWorkshopParticipant) =>
                 record?.withdrawalRightAcknowledgementAccepted ? `Yes (${formatDateWithAtTime(record?.createdAt)})` : "No",
+        },
+        {
+            title: "Invoices",
+            key: "invoices",
+            render: (_: unknown, record: IWorkshopParticipant) => {
+                const { record: invoiceRecord, instructor } = toInvoiceSource(record);
+                return (
+                    <div className="min-w-[440px]">
+                        <InvoiceDownloadButtons
+                            orderId={record.orderId}
+                            getInvoices={() => buildWorkshopInvoices(invoiceRecord, instructor)}
+                            showPayment={isOrderPaid(record.paymentStatus, record.paidAt)}
+                            showFinal={isWorkshopCompleted(invoiceRecord)}
+                            compact
+                        />
+                    </div>
+                );
+            },
         },
     ];
 

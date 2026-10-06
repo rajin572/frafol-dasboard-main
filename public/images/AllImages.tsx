@@ -1,4 +1,6 @@
 import logo from "./logo.png";
+// Same artwork as logo.png, but with the padding the invoice template was measured with.
+import invoiceLogo from "./invoiceLogo.png";
 
 // Auth Images
 import ForgotPassword from "./authImages/ForgotPassword.png";
@@ -19,6 +21,7 @@ import bell from "./icons/bell.png";
 
 export const AllImages = {
   logo,
+  invoiceLogo,
   profile,
   cover,
   photo,

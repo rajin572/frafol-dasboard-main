@@ -4,6 +4,7 @@ import { IGearOrder } from "./gearOrder.type";
 export interface UserSummary {
   _id: string;
   name: string;
+  sureName?: string;
   email: string;
   profileImage?: string;
   companyName?: string;
@@ -65,6 +66,7 @@ export interface ITransaction {
     date: string;
     time: string;
     vatAmount: number;
+    vatPercent?: number;
     price: number;
     mainPrice: number;
   } | string;
@@ -73,6 +75,8 @@ export interface ITransaction {
   serviceProviderPaid?: boolean;
   isRegisterAsCompany?: boolean;
   companyName?: string;
+  ICO?: string;
+  DIC?: string;
   IC_DPH?: string;
   name?: string;
   streetAddress?: string;

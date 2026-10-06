@@ -11,6 +11,7 @@ export * from "./package.type";
 export * from "./workshop.type";
 export * from "./eventOrder.type";
 export * from "./gearOrder.type";
+export * from "./invoice.type";
 export * from "./interactionManagemen.type";
 export * from "./communityForum.type";
 

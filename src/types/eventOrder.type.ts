@@ -1,3 +1,5 @@
+import type { IOrderInvoices } from "./invoice.type";
+
 type OrderStatus =
   | "pending"
   | "declined"
@@ -39,6 +41,8 @@ interface IEventOrder {
     email: string;
     profileImage: string;
     address?: string; // Adding optional address field to user
+    town?: string;
+    zipCode?: string;
     phone?: string; // Optional phone field for the user
     ico?: string;
     dic?: string;
@@ -82,6 +86,7 @@ interface IEventOrder {
   duration?: string; // Optional, duration for custom orders
   streetAddress?: string; // Optional, street address for custom orders
   town?: string; // Optional, town for custom orders
+  zipCode?: string; // Optional, zip code for custom orders
   country?: string; // Optional, country for custom orders
   isRegisterAsCompany?: boolean; // Optional, if registered as a company
   companyName?: string; // Optional, company name if registered as a company
@@ -101,6 +106,8 @@ interface IEventOrder {
   statusHistory: IStatusHistory[]; // History of status changes
   extensionRequests: IExtensionRequest[]; // Any extension requests for the order
   paymentStatus: string; // Status of the payment (e.g., "paid", "unpaid")
+  paidAt?: string; // Customer payment date (issue date of the payment invoices)
+  invoices?: IOrderInvoices;
   termsAndConditionsAccepted?: boolean;
   earlyServiceCommencementAccepted?: boolean;
   withdrawalRightAcknowledgementAccepted?: boolean;

@@ -1,15 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Modal } from "antd";
-import { pdf } from "@react-pdf/renderer";
-import { saveAs } from "file-saver";
-import { toast } from "sonner";
-import ReuseButton from "../../Button/ReuseButton";
+import InvoiceDownloadButtons from "../../Button/InvoiceDownloadButtons";
+import SubscriptionInvoiceButton from "../../Button/SubscriptionInvoiceButton";
 import { ITransaction } from "../../../types";
-import { IEventOrder } from "../../../types/eventOrder.type";
-import InvoiceDocumentFromAdminSide from "../../../utils/InvoiceDocumentFromAdminSide";
-import InvoiceGearFromAdminSide from "../../../utils/InvoiceGearFromAdminSide";
-import InvoiceFrafolChoiceFromClientSide from "../../../utils/InvoiceFrafolChoiceFromClientSide";
-import InvoiceWorkshopFromAdminSide from "../../../utils/InvoiceWorkshopFromAdminSide";
+import { getTransactionInvoices } from "../../../utils/invoice/transactionInvoices";
 
 interface TransactionViewModalProps {
   isViewModalVisible: boolean;
@@ -33,120 +26,20 @@ const TransactionViewModal: React.FC<TransactionViewModalProps> = ({
       minute: "2-digit",
     });
 
-  const handleEventInvoiceDownload = () => {
-    const order = currentRecord.eventOrderId as IEventOrder;
-    if (!order || typeof order === "string") {
-      toast.error("Event order data not available");
-      return;
-    }
-    const enrichedOrder: IEventOrder = {
-      ...order,
-      serviceProviderId: order.serviceProviderId ?? (currentRecord.serviceProviderId as any),
-      createdAt: order.createdAt || currentRecord.createdAt,
-    };
-    const toastId = toast.loading("Downloading...", { duration: 2000 });
-    pdf(<InvoiceDocumentFromAdminSide currentRecord={enrichedOrder} />)
-      .toBlob()
-      .then((blob: any) => {
-        saveAs(blob, `${enrichedOrder.orderId}-invoice.pdf`);
-        toast.success("Downloaded successfully!", { id: toastId });
-      })
-      .catch(() => toast.error("Download failed", { id: toastId }));
-  };
-
-  const handleGearInvoiceDownload = () => {
-    if (!currentRecord.gear) {
-      toast.error("Gear data not available");
-      return;
-    }
-    const toastId = toast.loading("Downloading...", { duration: 2000 });
-    pdf(<InvoiceGearFromAdminSide currentRecord={currentRecord} />)
-      .toBlob()
-      .then((blob: any) => {
-        saveAs(blob, `${currentRecord.orderId || currentRecord._id}-invoice.pdf`);
-        toast.success("Downloaded successfully!", { id: toastId });
-      })
-      .catch(() => toast.error("Download failed", { id: toastId }));
-  };
-
-  const handleWorkshopInvoiceDownload = () => {
-    const workshop = currentRecord.workshopId;
-    if (!workshop || typeof workshop === "string") {
-      toast.error("Workshop data not available");
-      return;
-    }
-    const toastId = toast.loading("Downloading...", { duration: 2000 });
-    pdf(
-      <InvoiceWorkshopFromAdminSide
-        record={currentRecord}
-        professional={currentRecord.serviceProviderId}
-      />
-    )
-      .toBlob()
-      .then((blob: any) => {
-        saveAs(blob, `workshop-invoice-${currentRecord._id.slice(-8)}.pdf`);
-        toast.success("Downloaded successfully!", { id: toastId });
-      })
-      .catch(() => toast.error("Download failed", { id: toastId }));
-  };
-
-  const handleSubscriptionInvoiceDownload = () => {
-    const days = currentRecord.subscriptionDays ?? 365;
-    const expiryDate = new Date(currentRecord.createdAt);
-    expiryDate.setDate(expiryDate.getDate() + days);
-
-    const myData: any = {
-      name: currentRecord.userId?.name || "",
-      sureName: "",
-      email: currentRecord.userId?.email || "",
-      companyName: "",
-      address: "",
-      town: "",
-      country: "",
-      ico: "",
-      dic: "",
-      ic_dph: "",
-      phone: "",
-    };
-    const subscriptionData: any = {
-      subscriptionExpiryDate: expiryDate.toISOString(),
-    };
-    const pack: any = {
-      _id: currentRecord._id,
-      title:
-        days >= 365
-          ? "Annual Plan"
-          : days >= 180
-          ? "Semi-Annual Plan"
-          : `${days}-Day Plan`,
-      price: currentRecord.amount,
-      duration: days,
-    };
-
-    const toastId = toast.loading("Downloading...", { duration: 2000 });
-    pdf(
-      <InvoiceFrafolChoiceFromClientSide
-        myData={myData}
-        subscriptionData={subscriptionData}
-        pack={pack}
-      />
-    )
-      .toBlob()
-      .then((blob: any) => {
-        saveAs(blob, `subscription-invoice-${currentRecord._id.slice(-8)}.pdf`);
-        toast.success("Downloaded successfully!", { id: toastId });
-      })
-      .catch(() => toast.error("Download failed", { id: toastId }));
-  };
-
   const paymentType = currentRecord.paymentType;
   const isSubscription = paymentType === "subscription";
+
+  // Event / gear / workshop: the four invoices of the order.
+  const hasOrderInvoices =
+    paymentType === "event" || paymentType === "gear" || paymentType === "workshop";
+  const invoices = hasOrderInvoices ? getTransactionInvoices(currentRecord) : null;
+  const showPaymentInvoices = currentRecord.paymentStatus === "completed";
 
   // ── Per-type pricing values ──────────────────────────────────────────
   const eventOrder =
     paymentType === "event" &&
-    currentRecord.eventOrderId &&
-    typeof currentRecord.eventOrderId !== "string"
+      currentRecord.eventOrderId &&
+      typeof currentRecord.eventOrderId !== "string"
       ? currentRecord.eventOrderId
       : null;
 
@@ -155,8 +48,8 @@ const TransactionViewModal: React.FC<TransactionViewModalProps> = ({
 
   const workshop =
     paymentType === "workshop" &&
-    currentRecord.workshopId &&
-    typeof currentRecord.workshopId !== "string"
+      currentRecord.workshopId &&
+      typeof currentRecord.workshopId !== "string"
       ? currentRecord.workshopId
       : null;
 
@@ -342,60 +235,36 @@ const TransactionViewModal: React.FC<TransactionViewModalProps> = ({
                 {eventOrder
                   ? `€${(eventOrder.totalPrice || 0).toFixed(2)}`
                   : gear
-                  ? `€${gear.mainPrice.toFixed(2)}`
-                  : workshop
-                  ? `€${workshop.mainPrice.toFixed(2)}`
-                  : `€${(currentRecord.amount || 0).toFixed(2)}`}
+                    ? `€${gear.mainPrice.toFixed(2)}`
+                    : workshop
+                      ? `€${workshop.mainPrice.toFixed(2)}`
+                      : `€${(currentRecord.amount || 0).toFixed(2)}`}
               </span>
             </div>
           </div>
 
           {/* ── Download buttons ── */}
-          {paymentType === "event" && (
-            <div className="flex items-center justify-center mt-5">
-              <ReuseButton
-                variant="secondary"
-                className="!px-5 !py-4 !w-fit"
-                onClick={handleEventInvoiceDownload}
-              >
-                Download Invoice
-              </ReuseButton>
-            </div>
-          )}
-
-          {paymentType === "gear" && (
-            <div className="flex items-center justify-center mt-5">
-              <ReuseButton
-                variant="secondary"
-                className="!px-5 !py-4 !w-fit"
-                onClick={handleGearInvoiceDownload}
-              >
-                Download Invoice
-              </ReuseButton>
-            </div>
-          )}
-
-          {paymentType === "workshop" && (
-            <div className="flex items-center justify-center mt-5">
-              <ReuseButton
-                variant="secondary"
-                className="!px-5 !py-4 !w-fit"
-                onClick={handleWorkshopInvoiceDownload}
-              >
-                Download Invoice
-              </ReuseButton>
+          {hasOrderInvoices && (!invoices || showPaymentInvoices || invoices.showFinal) && (
+            <div className="mt-5">
+              <h4 className="font-semibold mb-2">Invoices</h4>
+              {invoices ? (
+                <InvoiceDownloadButtons
+                  orderId={invoices.orderId}
+                  getInvoices={invoices.getInvoices}
+                  showPayment={showPaymentInvoices}
+                  showFinal={invoices.showFinal}
+                />
+              ) : (
+                <p className="text-xs sm:text-sm text-gray-500">
+                  This transaction does not include the order details needed for its invoices.
+                </p>
+              )}
             </div>
           )}
 
           {paymentType === "subscription" && (
             <div className="flex items-center justify-center mt-5">
-              <ReuseButton
-                variant="secondary"
-                className="!px-5 !py-4 !w-fit"
-                onClick={handleSubscriptionInvoiceDownload}
-              >
-                Download Invoice
-              </ReuseButton>
+              <SubscriptionInvoiceButton transaction={currentRecord} />
             </div>
           )}
         </div>
