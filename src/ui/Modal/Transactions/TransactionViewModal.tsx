@@ -117,7 +117,7 @@ const TransactionViewModal: React.FC<TransactionViewModalProps> = ({
                 <span>
                   {eventOrder?.orderId ||
                     currentRecord.orderId ||
-                    "—"}
+                    currentRecord._id.slice(-8).toUpperCase()}
                 </span>
               </div>
             )}

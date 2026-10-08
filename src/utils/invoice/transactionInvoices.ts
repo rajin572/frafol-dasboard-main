@@ -90,11 +90,15 @@ const gearTransactionInvoices = (tx: ITransaction): TransactionInvoices | null =
 
 const workshopTransactionInvoices = (tx: ITransaction): TransactionInvoices | null => {
   const workshop = asObject(tx.workshopId);
-  if (!workshop || !tx.orderId) return null;
+  if (!workshop) return null;
+
+  // Workshop transactions carry no dedicated order ID (unlike event/gear): fall back to the
+  // transaction's own id, same convention used in the transactions table.
+  const orderId = tx.orderId || tx._id.slice(-8).toUpperCase();
 
   // Same shape as a workshop participant: the transaction mirrors the registration's billing data.
   const record = {
-    orderId: tx.orderId,
+    orderId,
     workshopId: workshop,
     clientId: tx.userId,
     name: tx.name,
@@ -110,7 +114,7 @@ const workshopTransactionInvoices = (tx: ITransaction): TransactionInvoices | nu
   };
 
   return {
-    orderId: tx.orderId,
+    orderId,
     getInvoices: () => buildWorkshopInvoices(record, tx.serviceProviderId),
     showFinal: isWorkshopCompleted(record),
   };
