@@ -1,7 +1,7 @@
 import { Modal } from "antd";
 import { AllImages } from "../../../../public/images/AllImages";
 import { ICommunityPost } from "../../../types";
-import { getImageUrl } from "../../../helpers/config/envConfig";
+import { resolveMediaUrl } from "../../../utils/resolveMediaUrl";
 import { formatDateTime } from "../../../utils/dateFormet";
 
 interface ViewCommunityForumManagementProps {
@@ -17,7 +17,6 @@ const ViewCommunityForumManagement: React.FC<
     handleCancel,
     currentRecord,
 }) => {
-        const serverUrl = getImageUrl();
         return (
             <Modal
                 open={isViewModalVisible}
@@ -46,7 +45,7 @@ const ViewCommunityForumManagement: React.FC<
                                     draggable={false}
                                     src={
                                         currentRecord?.authorId?.profileImage
-                                            ? serverUrl + currentRecord?.authorId?.profileImage
+                                            ? resolveMediaUrl(currentRecord?.authorId?.profileImage)
                                             : AllImages?.profile
                                     }
                                     alt="user"
@@ -60,7 +59,7 @@ const ViewCommunityForumManagement: React.FC<
                                 <img
                                     src={
                                         currentRecord?.images?.[0]
-                                            ? serverUrl + currentRecord?.images?.[0]
+                                            ? resolveMediaUrl(currentRecord?.images?.[0])
                                             : AllImages?.cover
                                     }
                                     alt="user"

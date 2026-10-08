@@ -4,7 +4,7 @@ import { Space, Tooltip } from "antd";
 import { MdDelete } from "react-icons/md";
 import { GoEye } from "react-icons/go";
 import { AllImages } from "../../../public/images/AllImages";
-import { getImageUrl } from "../../helpers/config/envConfig";
+import { resolveMediaUrl } from "../../utils/resolveMediaUrl";
 import { IGear } from "../../types";
 
 // Define the type for the props
@@ -29,7 +29,6 @@ const AdminGearMarketplaceTable: React.FC<AdminGearMarketplaceTableProps> = ({
   total,
   limit,
 }) => {
-  const serverUrl = getImageUrl();
   const columns = [
     {
       title: "ID",
@@ -45,7 +44,7 @@ const AdminGearMarketplaceTable: React.FC<AdminGearMarketplaceTableProps> = ({
       key: "gallery",
       render: (text: string[]) => (
         <img
-          src={text?.[0] ? serverUrl + text?.[0] : AllImages.cover}
+          src={text?.[0] ? resolveMediaUrl(text?.[0]) : AllImages.cover}
           alt="Item"
           width={50}
           height={50}

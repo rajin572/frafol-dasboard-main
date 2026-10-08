@@ -4,7 +4,7 @@ import { Space, Tooltip } from "antd";
 import { GoEye } from "react-icons/go";
 import ReuseTable from "../../utils/ReuseTable";
 import { formatDateTime } from "../../utils/dateFormet";
-import { getImageUrl } from "../../helpers/config/envConfig";
+import { resolveMediaUrl } from "../../utils/resolveMediaUrl";
 import { AllImages } from "../../../public/images/AllImages";
 
 // Define the type for the props
@@ -27,7 +27,6 @@ const AdminAllInsuranceTable: React.FC<AdminAllInsuranceTableProps> = ({
   total = 0,
   limit,
 }) => {
-  const serverUrl = getImageUrl();
   const columns = [
     {
       title: "UID",
@@ -45,7 +44,7 @@ const AdminAllInsuranceTable: React.FC<AdminAllInsuranceTableProps> = ({
           <img
             src={
               record?.userId.profileImage
-                ? serverUrl + record?.userId.profileImage
+                ? resolveMediaUrl(record?.userId.profileImage)
                 : AllImages.profile
             }
             alt="Item"

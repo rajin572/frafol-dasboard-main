@@ -5,15 +5,14 @@ import { FaDownload } from "react-icons/fa";
 import { saveAs } from "file-saver";
 import { toast } from "sonner";
 import { Tooltip } from "antd";
+import { resolveMediaUrl } from "./resolveMediaUrl";
 
 const ImagePreviewer = ({
-  imageUrl,
   image,
   msg,
   userData,
   imgHeight,
 }: {
-  imageUrl: string;
   image: string;
   msg: any;
   userData: any;
@@ -22,7 +21,7 @@ const ImagePreviewer = ({
   if (!image) return null;
 
   const filePath = image.replace(/\\/g, "/");
-  const fileUrl = `${imageUrl}${filePath}`;
+  const fileUrl = resolveMediaUrl(filePath);
   const isImage = /\.(jpeg|jpg|png|gif|webp|bmp|svg)$/i.test(filePath);
   const getFileName = (path: string) => path.split("/").pop() || "download";
 

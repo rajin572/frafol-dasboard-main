@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { getImageUrl } from "../../helpers/config/envConfig";
+import { resolveMediaUrl } from "../../utils/resolveMediaUrl";
 import { AllImages } from "../../../public/images/AllImages";
 
 const MarketPlaceImageTab = ({ images }: { images: string[] }) => {
@@ -10,7 +10,6 @@ const MarketPlaceImageTab = ({ images }: { images: string[] }) => {
     setSelectedImage(images[0]);
   }, [images]);
 
-  const serverurl = getImageUrl();
   return (
     <div className="flex gap-4">
       <div className="flex flex-col gap-2">
@@ -19,7 +18,7 @@ const MarketPlaceImageTab = ({ images }: { images: string[] }) => {
             width={80}
             height={80}
             key={item}
-            src={item ? serverurl + item : AllImages.cover}
+            src={item ? resolveMediaUrl(item) : AllImages.cover}
             alt="product"
             className={`object-cover cursor-pointer border-2 rounded-md ${
               item === selectedImage
@@ -36,7 +35,7 @@ const MarketPlaceImageTab = ({ images }: { images: string[] }) => {
           key={selectedImage} // <-- Force remount & reload on change
           width={1000}
           height={1000}
-          src={selectedImage ? serverurl + selectedImage : AllImages.cover}
+          src={selectedImage ? resolveMediaUrl(selectedImage) : AllImages.cover}
           alt="selected product"
           className="w-[90%] h-auto object-cover "
           fetchPriority="high"

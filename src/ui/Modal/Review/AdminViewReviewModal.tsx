@@ -1,7 +1,7 @@
 import { Image, Modal } from "antd";
 import { AllImages } from "../../../../public/images/AllImages";
 import { IReport } from "../../../types";
-import { getImageUrl } from "../../../helpers/config/envConfig";
+import { resolveMediaUrl } from "../../../utils/resolveMediaUrl";
 import { Link } from "react-router-dom";
 
 interface AdminViewReviewModalProps {
@@ -17,7 +17,6 @@ const AdminViewReviewModal: React.FC<AdminViewReviewModalProps> = ({
 }) => {
   console.log(currentRecord);
   const { userId, reason, image, name, email, message, url } = currentRecord || {};
-  const serverUrl = getImageUrl();
   return (
     <Modal
       open={isViewModalVisible}
@@ -39,7 +38,7 @@ const AdminViewReviewModal: React.FC<AdminViewReviewModalProps> = ({
             <img
               src={
                 userId?.profileImage
-                  ? serverUrl + userId?.profileImage
+                  ? resolveMediaUrl(userId?.profileImage)
                   : AllImages.profile
               }
               alt={userId?.name || "User"}
@@ -55,7 +54,7 @@ const AdminViewReviewModal: React.FC<AdminViewReviewModalProps> = ({
           <Image
             src={
               image
-                ? serverUrl + image
+                ? resolveMediaUrl(image)
                 : AllImages.profile
             }
             alt={userId?.name || "User"}

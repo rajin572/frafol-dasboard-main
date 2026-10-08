@@ -1,7 +1,7 @@
 import { Modal } from "antd";
 import { AllImages } from "../../../../public/images/AllImages";
 import { IInsurance } from "../../../types";
-import { getImageUrl } from "../../../helpers/config/envConfig";
+import { resolveMediaUrl } from "../../../utils/resolveMediaUrl";
 
 interface ViewInsuranceModalProps {
   isViewModalVisible: boolean;
@@ -14,7 +14,6 @@ const ViewInsuranceModal: React.FC<ViewInsuranceModalProps> = ({
   handleCancel,
   currentRecord,
 }) => {
-  const serverUrl = getImageUrl();
   return (
     <Modal
       open={isViewModalVisible}
@@ -33,7 +32,7 @@ const ViewInsuranceModal: React.FC<ViewInsuranceModalProps> = ({
             <img
               src={
                 currentRecord?.userId?.profileImage
-                  ? serverUrl + currentRecord?.userId?.profileImage
+                  ? resolveMediaUrl(currentRecord?.userId?.profileImage)
                   : AllImages.profile
               }
               alt={currentRecord?.userId?.name || "User Avatar"}

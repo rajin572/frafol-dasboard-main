@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Modal } from "antd";
 import { IWorkshop } from "../../../types";
-import { getImageUrl } from "../../../helpers/config/envConfig";
+import { resolveMediaUrl } from "../../../utils/resolveMediaUrl";
 import { AllImages } from "../../../../public/images/AllImages";
 import { IoCalendarOutline } from "react-icons/io5";
 import { formatDate, formetTime } from "../../../utils/dateFormet";
@@ -24,7 +24,6 @@ const ViewWorkshopManagementModal: React.FC<ViewWorkshopManagementModalProps> = 
     handleCancel,
     currentRecord,
 }) => {
-    const serverUrl = getImageUrl();
     const [isParticipantsModalVisible, setIsParticipantsModalVisible] =
         useState(false);
 
@@ -42,7 +41,7 @@ const ViewWorkshopManagementModal: React.FC<ViewWorkshopManagementModalProps> = 
                     height={1000}
                     src={
                         currentRecord?.image
-                            ? serverUrl + currentRecord?.image
+                            ? resolveMediaUrl(currentRecord?.image)
                             : AllImages?.cover
                     }
                     alt="workspace"
@@ -72,7 +71,7 @@ const ViewWorkshopManagementModal: React.FC<ViewWorkshopManagementModalProps> = 
                             height={1000}
                             src={
                                 currentRecord?.authorId?.profileImage
-                                    ? serverUrl + currentRecord?.authorId?.profileImage
+                                    ? resolveMediaUrl(currentRecord?.authorId?.profileImage)
                                     : AllImages?.profile
                             }
                             alt="user"

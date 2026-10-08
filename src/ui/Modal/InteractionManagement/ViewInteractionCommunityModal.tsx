@@ -1,7 +1,7 @@
 import { Modal, Tooltip } from "antd";
 import { AllImages } from "../../../../public/images/AllImages";
 import { IInteractionCommunity } from "../../../types";
-import { getImageUrl } from "../../../helpers/config/envConfig";
+import { resolveMediaUrl } from "../../../utils/resolveMediaUrl";
 import { formatDateTime } from "../../../utils/dateFormet";
 import ReuseButton from "../../Button/ReuseButton";
 
@@ -22,7 +22,6 @@ const ViewInteractionCommunityModal: React.FC<
   showApproveModal,
   showDeclineModal,
 }) => {
-  const serverUrl = getImageUrl();
   return (
     <Modal
       open={isViewModalVisible}
@@ -51,7 +50,7 @@ const ViewInteractionCommunityModal: React.FC<
                 draggable={false}
                 src={
                   currentRecord?.authorId?.profileImage
-                    ? serverUrl + currentRecord?.authorId?.profileImage
+                    ? resolveMediaUrl(currentRecord?.authorId?.profileImage)
                     : AllImages?.profile
                 }
                 alt="user"
@@ -65,7 +64,7 @@ const ViewInteractionCommunityModal: React.FC<
               <img
                 src={
                   currentRecord?.images?.[0]
-                    ? serverUrl + currentRecord?.images?.[0]
+                    ? resolveMediaUrl(currentRecord?.images?.[0])
                     : AllImages?.cover
                 }
                 alt="user"

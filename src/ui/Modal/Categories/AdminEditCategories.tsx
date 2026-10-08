@@ -5,7 +5,7 @@ import ReuseInput from "../../Form/ReuseInput";
 import ReuseUpload from "../../Form/ReuseUpload";
 import ReuseButton from "../../Button/ReuseButton";
 import { useEffect } from "react";
-import { getImageUrl } from "../../../helpers/config/envConfig";
+import { resolveMediaUrl } from "../../../utils/resolveMediaUrl";
 import tryCatchWrapper from "../../../utils/tryCatchWrapper";
 import { useUpdateCategoryMutation } from "../../../redux/features/category/categoryApi";
 interface AdminEditCategoriesProps {
@@ -23,7 +23,6 @@ const AdminEditCategories: React.FC<AdminEditCategoriesProps> = ({
 }) => {
   const [updateCategory] = useUpdateCategoryMutation();
   const [form] = Form.useForm();
-  const serverUrl = getImageUrl();
 
   useEffect(() => {
     if (currentRecord) {
@@ -95,7 +94,7 @@ const AdminEditCategories: React.FC<AdminEditCategoriesProps> = ({
                 <Typography.Title level={5}>Current Image: </Typography.Title>
                 <img
                   src={
-                    currentRecord?.image ? serverUrl + currentRecord?.image : ""
+                    currentRecord?.image ? resolveMediaUrl(currentRecord?.image) : ""
                   }
                   alt=""
                   className="w-auto h-20 object-cover"

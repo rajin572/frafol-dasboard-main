@@ -4,7 +4,7 @@ import { AllImages } from "../../../../public/images/AllImages";
 import { FaStar } from "react-icons/fa";
 import ReuseButton from "../../Button/ReuseButton";
 import { IUser } from "../../../types";
-import { getImageUrl } from "../../../helpers/config/envConfig";
+import { resolveMediaUrl } from "../../../utils/resolveMediaUrl";
 import { formatDate } from "../../../utils/dateFormet";
 interface UserModalProps {
   isViewModalVisible: boolean;
@@ -20,7 +20,6 @@ const UserModal: React.FC<UserModalProps> = ({
   activeTab,
   showViewPortfolioModal,
 }) => {
-  const serverUrl = getImageUrl();
   return (
     <Modal
       open={isViewModalVisible}
@@ -41,7 +40,7 @@ const UserModal: React.FC<UserModalProps> = ({
             {/* Avatar */}
             <div className="border rounded-full">
               <img
-                src={currentRecord?.profileImage ? serverUrl + currentRecord?.profileImage : AllImages.profile}
+                src={currentRecord?.profileImage ? resolveMediaUrl(currentRecord?.profileImage) : AllImages.profile}
                 alt={currentRecord?.name}
                 className="w-14 h-14 object-cover rounded-full"
               />

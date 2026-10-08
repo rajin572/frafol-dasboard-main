@@ -4,7 +4,7 @@ import { LuClock, LuUsers } from "react-icons/lu";
 import { FaLink } from "react-icons/fa";
 import ReuseButton from "../../Button/ReuseButton";
 import { IWorkshop } from "../../../types";
-import { getImageUrl } from "../../../helpers/config/envConfig";
+import { resolveMediaUrl } from "../../../utils/resolveMediaUrl";
 import { formatDate, formetTime } from "../../../utils/dateFormet";
 import { MdLocationPin } from "react-icons/md";
 
@@ -17,7 +17,6 @@ const ViewWorkshop = ({
   showDeclineModal: (record: IWorkshop) => void;
   currentRecord: IWorkshop;
 }) => {
-  const serverUrl = getImageUrl();
   return (
     <div className="p-1.5 rounded-xl border border-background-color mt-10 relative">
       <img
@@ -25,7 +24,7 @@ const ViewWorkshop = ({
         height={1000}
         src={
           currentRecord?.image
-            ? serverUrl + currentRecord?.image
+            ? resolveMediaUrl(currentRecord?.image)
             : AllImages?.cover
         }
         alt="workspace"
@@ -55,7 +54,7 @@ const ViewWorkshop = ({
             height={1000}
             src={
               currentRecord?.authorId?.profileImage
-                ? serverUrl + currentRecord?.authorId?.profileImage
+                ? resolveMediaUrl(currentRecord?.authorId?.profileImage)
                 : AllImages?.profile
             }
             alt="user"

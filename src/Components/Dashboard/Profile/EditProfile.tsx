@@ -7,7 +7,7 @@ import ReuseInput from "../../../ui/Form/ReuseInput";
 import ReuseButton from "../../../ui/Button/ReuseButton";
 import Loading from "../../../ui/Loading";
 import tryCatchWrapper from "../../../utils/tryCatchWrapper";
-import { getImageUrl } from "../../../helpers/config/envConfig";
+import { resolveMediaUrl } from "../../../utils/resolveMediaUrl";
 import {
   useGetProfileQuery,
   useUpdateProfileMutation,
@@ -41,13 +41,12 @@ const inputStructure = [
 
 const EditProfile = () => {
   const [form] = Form.useForm();
-  const imageApiUrl = getImageUrl();
   const { data, isFetching } = useGetProfileQuery({});
   const [updateProfile] = useUpdateProfileMutation({});
 
   const profileData = data?.data;
 
-  const profileImage = imageApiUrl + profileData?.profileImage;
+  const profileImage = resolveMediaUrl(profileData?.profileImage);
 
   const [imageUrl, setImageUrl] = useState(profileImage);
 

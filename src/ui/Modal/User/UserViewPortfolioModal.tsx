@@ -3,7 +3,7 @@ import { Modal } from "antd";
 import { Image as AntdImage } from "antd"; // import this
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { useMemo, useRef, useState } from "react";
-import { getImageUrl } from "../../../helpers/config/envConfig";
+import { resolveMediaUrl } from "../../../utils/resolveMediaUrl";
 import { IUser } from "../../../types";
 import { FiChevronDown } from "react-icons/fi";
 interface UserViewPortfolioModalProps {
@@ -20,7 +20,6 @@ const UserViewPortfolioModal: React.FC<UserViewPortfolioModalProps> = ({
   currentRecord,
 }) => {
   console.log(currentRecord)
-  const serverUrl = getImageUrl();
 
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     intro: false,
@@ -101,7 +100,7 @@ const UserViewPortfolioModal: React.FC<UserViewPortfolioModalProps> = ({
 
                     <div className="relative group w-full">
                       <video
-                        src={serverUrl + currentRecord?.introVideo}
+                        src={resolveMediaUrl(currentRecord?.introVideo)}
                         controls
                         className="w-full h-full object-cover rounded-lg"
                         preload="metadata"
@@ -145,7 +144,7 @@ const UserViewPortfolioModal: React.FC<UserViewPortfolioModalProps> = ({
                             key={index}
                             width={2000}
                             height={2000}
-                            src={serverUrl + item}
+                            src={resolveMediaUrl(item)}
                             alt={"gallery Image"}
                             className="w-full h-full max-h-80 object-cover rounded-lg"
                           />
@@ -187,7 +186,7 @@ const UserViewPortfolioModal: React.FC<UserViewPortfolioModalProps> = ({
                             key={index}
                             width={2000}
                             height={2000}
-                            src={serverUrl + item}
+                            src={resolveMediaUrl(item)}
                             alt={"gallery Image"}
                             className="w-full h-full max-h-80 object-cover rounded-lg"
                           />
@@ -232,7 +231,7 @@ const UserViewPortfolioModal: React.FC<UserViewPortfolioModalProps> = ({
                               videoRefs.current[index] = el;
                             }
                           }}
-                          src={serverUrl + item}
+                          src={resolveMediaUrl(item)}
                           controls
                           className="w-full h-full object-cover rounded-lg"
                           preload="metadata"

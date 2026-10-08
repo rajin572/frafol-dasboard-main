@@ -3,7 +3,7 @@ import { Modal } from "antd";
 import { FaCalendarAlt, FaMapMarkerAlt } from "react-icons/fa";
 import { FaClock } from "react-icons/fa6";
 import { IEventOrder } from "../../../types";
-import { getImageUrl } from "../../../helpers/config/envConfig";
+import { resolveMediaUrl } from "../../../utils/resolveMediaUrl";
 import { AllImages } from "../../../../public/images/AllImages";
 import { formatDate, formetTime, formatDateWithAtTime } from "../../../utils/dateFormet";
 import { budgetLabels } from "../../../utils/budgetLabels";
@@ -21,8 +21,6 @@ const ViewOrderManagementModal: React.FC<ViewOrderManagementModalProps> = ({
   handleCancel,
   currentRecord,
 }) => {
-  const serverUrl = getImageUrl();
-
 
   console.log(currentRecord)
 
@@ -81,7 +79,7 @@ const ViewOrderManagementModal: React.FC<ViewOrderManagementModalProps> = ({
             <img
               src={
                 currentRecord?.userId?.profileImage
-                  ? serverUrl + currentRecord?.userId?.profileImage
+                  ? resolveMediaUrl(currentRecord?.userId?.profileImage)
                   : AllImages.profile
               }
               alt={currentRecord?.userId?.name || "Client Avatar"}
@@ -133,7 +131,7 @@ const ViewOrderManagementModal: React.FC<ViewOrderManagementModalProps> = ({
             <img
               src={
                 currentRecord?.serviceProviderId?.profileImage
-                  ? serverUrl + currentRecord?.serviceProviderId?.profileImage
+                  ? resolveMediaUrl(currentRecord?.serviceProviderId?.profileImage)
                   : AllImages.profile
               }
               alt={currentRecord?.serviceProviderId?.name || "Client Avatar"}

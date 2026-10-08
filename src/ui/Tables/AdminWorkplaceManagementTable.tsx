@@ -3,7 +3,7 @@ import ReuseTable from "../../utils/ReuseTable";
 import { Space, Tooltip } from "antd";
 import { MdDelete } from "react-icons/md";
 import { IWorkshop } from "../../types";
-import { getImageUrl } from "../../helpers/config/envConfig";
+import { resolveMediaUrl } from "../../utils/resolveMediaUrl";
 import { AllImages } from "../../../public/images/AllImages";
 import { formatDate, formetTime } from "../../utils/dateFormet";
 import { Link } from "react-router-dom";
@@ -24,7 +24,6 @@ interface AdminWorkplaceManagementTableProps {
 const AdminWorkplaceManagementTable: React.FC<
   AdminWorkplaceManagementTableProps
 > = ({ data, loading, setPage, showDeleteModal, showViewModal, page, total, limit }) => {
-  const serverUrl = getImageUrl();
   const columns = [
     {
       title: "ID",
@@ -40,7 +39,7 @@ const AdminWorkplaceManagementTable: React.FC<
       key: "image",
       render: (text: string[]) => (
         <img
-          src={text ? serverUrl + text : AllImages.cover}
+          src={text ? resolveMediaUrl(text) : AllImages.cover}
           alt="Item"
           width={50}
           height={50}
@@ -83,7 +82,7 @@ const AdminWorkplaceManagementTable: React.FC<
             height={1000}
             src={
               record?.authorId?.profileImage
-                ? serverUrl + record?.authorId?.profileImage
+                ? resolveMediaUrl(record?.authorId?.profileImage)
                 : AllImages?.profile
             }
             alt="user"

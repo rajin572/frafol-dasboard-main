@@ -3,7 +3,7 @@ import React from "react";
 import { Image, Space, Tooltip } from "antd";
 import ReuseTable from "../../../utils/ReuseTable";
 import { MdDelete, MdEdit } from "react-icons/md";
-import { getImageUrl } from "../../../helpers/config/envConfig";
+import { resolveMediaUrl } from "../../../utils/resolveMediaUrl";
 import { AllImages } from "../../../../public/images/AllImages";
 import { HolderOutlined } from "@ant-design/icons";
 
@@ -34,7 +34,6 @@ const AdminPhotoCategoryTable: React.FC<AdminPhotoCategoryTableProps> = ({
   draggable = true, // Default to true
 
 }) => {
-  const serverUrl = getImageUrl();
 
   const columns = [
     {
@@ -64,7 +63,7 @@ const AdminPhotoCategoryTable: React.FC<AdminPhotoCategoryTableProps> = ({
       key: "image",
       render: (image: string) => (
         <Image
-          src={image ? serverUrl + image : AllImages.cover}
+          src={image ? resolveMediaUrl(image) : AllImages.cover}
           alt="Category"
           style={{ width: "75px", height: "75px" }}
           className="object-cover"

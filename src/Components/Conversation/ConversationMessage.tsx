@@ -10,7 +10,7 @@ import {
   setSelectedChatUser,
 } from "../../redux/features/conversation/conversationSlice";
 import { useGetConversationMessageListQuery } from "../../redux/features/conversation/conversationApi";
-import { getImageUrl } from "../../helpers/config/envConfig";
+import { resolveMediaUrl } from "../../utils/resolveMediaUrl";
 import { FadeLoader } from "react-spinners";
 import ConversationMessageCard from "./ConversationMessageCard";
 import ConversationSendMessage from "./ConversationSendMessage";
@@ -18,7 +18,6 @@ import { IMessage } from "../../types/conversation.type";
 import { AllImages } from "../../../public/images/AllImages";
 
 const ConversationMessage = ({ userData, onlineUsers }: any) => {
-  const imageUrl = getImageUrl();
   const socket = useSocket()?.socket;
   const dispatch = useDispatch();
   const selectedConversation = useSelector(selectSelectedChatUser);
@@ -163,12 +162,13 @@ const ConversationMessage = ({ userData, onlineUsers }: any) => {
                 <img
                   loading="lazy"
                   className="h-12 w-12 object-cover rounded-full"
-                  src={`${
+                  src={
                     selectedConversation?.chat?.users?.[0]?.profileImage
-                      ? imageUrl +
-                        selectedConversation?.chat?.users?.[0]?.profileImage
+                      ? resolveMediaUrl(
+                          selectedConversation?.chat?.users?.[0]?.profileImage
+                        )
                       : AllImages?.cover
-                  }`}
+                  }
                   alt="Profile"
                 />
                 <div>
@@ -205,7 +205,6 @@ const ConversationMessage = ({ userData, onlineUsers }: any) => {
                         key={msg._id ?? i}
                         msg={msg}
                         userData={userData}
-                        imageUrl={imageUrl}
                       />
                     ))}
                   </div>

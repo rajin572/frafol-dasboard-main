@@ -1,7 +1,7 @@
 import { Modal } from "antd";
 import { AllImages } from "../../../../public/images/AllImages";
 import { IDeleteAccountRequest } from "../../../types";
-import { getImageUrl } from "../../../helpers/config/envConfig";
+import { resolveMediaUrl } from "../../../utils/resolveMediaUrl";
 import { formatDate } from "../../../utils/dateFormet";
 
 interface Props {
@@ -15,7 +15,6 @@ const DeleteAccountRequestDetailModal: React.FC<Props> = ({
   onCancel,
   record,
 }) => {
-  const serverUrl = getImageUrl();
 
   return (
     <Modal
@@ -37,7 +36,7 @@ const DeleteAccountRequestDetailModal: React.FC<Props> = ({
           <img
             src={
               record?.profileImage
-                ? serverUrl + record.profileImage
+                ? resolveMediaUrl(record.profileImage)
                 : AllImages.profile
             }
             alt={record?.name}

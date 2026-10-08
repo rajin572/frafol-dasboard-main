@@ -1,5 +1,5 @@
 import { Modal } from "antd";
-import { getImageUrl } from "../../../helpers/config/envConfig";
+import { resolveMediaUrl } from "../../../utils/resolveMediaUrl";
 import { AllImages } from "../../../../public/images/AllImages";
 import { IGearOrder } from "../../../types";
 import { formatDateWithAtTime } from "../../../utils/dateFormet";
@@ -17,7 +17,6 @@ const GearOrderViewModal: React.FC<GearOrderViewModalProps> = ({
   handleCancel,
   currentRecord,
 }) => {
-  const serverUrl = getImageUrl();
   // Payment invoices once the order is paid, final invoices once it is delivered.
   const showPaymentInvoices = isOrderPaid(
     currentRecord?.paymentStatus,
@@ -38,7 +37,7 @@ const GearOrderViewModal: React.FC<GearOrderViewModalProps> = ({
             <img
               src={
                 currentRecord?.gearMarketplaceId?.gallery?.[0]
-                  ? serverUrl + currentRecord?.gearMarketplaceId?.gallery?.[0]
+                  ? resolveMediaUrl(currentRecord?.gearMarketplaceId?.gallery?.[0])
                   : AllImages?.product
               }
               alt={currentRecord?.gearMarketplaceId?.name || "Product Image"}

@@ -4,7 +4,7 @@ import { BarsOutlined, BellFilled } from "@ant-design/icons";
 import { Dropdown } from "antd";
 import { Link } from "react-router-dom";
 import { AllImages } from "../../../public/images/AllImages";
-import { getImageUrl } from "../../helpers/config/envConfig";
+import { resolveMediaUrl } from "../../utils/resolveMediaUrl";
 import useUserData from "../../hooks/useUserData";
 import { useGetProfileQuery } from "../../redux/features/profile/profileApi";
 import SpinLoader from "../../ui/SpinLoader";
@@ -16,7 +16,6 @@ import { useSocket } from "../../context/socket-context";
 import { toast } from "sonner";
 
 const Topbar = ({ collapsed, setCollapsed }: any) => {
-  const serverUrl = getImageUrl();
   const [notificationCount, setNotificationCount] = useState(0);
   const [allNotifications, setAllNotifications] = useState<INotification[]>([]);
   const socket = useSocket()?.socket;
@@ -184,7 +183,7 @@ const Topbar = ({ collapsed, setCollapsed }: any) => {
             <div className="flex items-center justify-center gap-0 bg-white text-base-color rounded-lg  px-2 py-1  border border-secondary-color ">
               <img
                 src={
-                  profileImage ? serverUrl + profileImage : AllImages.profile
+                  profileImage ? resolveMediaUrl(profileImage) : AllImages.profile
                 }
                 alt="profile_pic"
                 style={{ width: "40px", height: "40px", marginRight: "10px" }}

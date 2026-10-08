@@ -7,7 +7,8 @@ import { toast } from "sonner";
 import axios from "axios";
 import { selectSelectedChatUser } from "../../redux/features/conversation/conversationSlice";
 import { useAppSelector } from "../../redux/hooks";
-import { getBaseUrl, getImageUrl } from "../../helpers/config/envConfig";
+import { getBaseUrl } from "../../helpers/config/envConfig";
+import { resolveMediaUrl } from "../../utils/resolveMediaUrl";
 import SpinLoader from "../../ui/SpinLoader";
 import { AllImages } from "../../../public/images/AllImages";
 import Cookies from "js-cookie";
@@ -16,7 +17,6 @@ const ConversationSendMessage = ({ socket }: any) => {
   const token = Cookies.get("frafoldashboard_accessToken");
   const selectedConversation = useAppSelector(selectSelectedChatUser);
   const serverUrl = getBaseUrl();
-  const imageUrl = getImageUrl();
   const [form] = Form.useForm();
   const [isUploadLoading, setIsUploadLoading] = useState<boolean>(false);
   const [textValue, setTextValue] = useState<string | null>(null);
@@ -115,11 +115,7 @@ const ConversationSendMessage = ({ socket }: any) => {
                   {isImage ? (
                     // Render image thumbnail if it's an image
                     <img
-                      src={
-                        imageUrl + fileUrl
-                          ? imageUrl + fileUrl
-                          : AllImages?.cover
-                      }
+                      src={fileUrl ? resolveMediaUrl(fileUrl) : AllImages?.cover}
                       alt={fileName}
                       className="w-16 h-16 object-cover rounded"
                     />

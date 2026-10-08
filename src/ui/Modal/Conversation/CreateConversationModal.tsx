@@ -7,7 +7,7 @@ import { useState } from "react";
 import { useCreateConversationMutation } from "../../../redux/features/conversation/conversationApi";
 import { useGetAllTypeOfUsersQuery } from "../../../redux/features/users/usersApi";
 import SpinLoader from "../../SpinLoader";
-import { getImageUrl } from "../../../helpers/config/envConfig";
+import { resolveMediaUrl } from "../../../utils/resolveMediaUrl";
 import { AllImages } from "../../../../public/images/AllImages";
 
 interface IChatUser {
@@ -28,7 +28,6 @@ const CreateConversationModal: React.FC<CreateConversationModalProps> = ({
     isAddModalVisible,
     handleCancel,
 }) => {
-    const serverUrl = getImageUrl();
     const [form] = Form.useForm();
     const [searchText, setSearchText] = useState("");
     const [selectedUsers, setSelectedUsers] = useState<IChatUser | null>(null);
@@ -88,7 +87,7 @@ const CreateConversationModal: React.FC<CreateConversationModalProps> = ({
                                 allUsers?.map((user: IChatUser) => (
                                     <div onClick={() => setSelectedUsers(user)} key={user?._id} className={`${selectedUsers?._id === user?._id ? "bg-secondary-color/30" : ""} flex items-center gap-3 p-1 cursor-pointer rounded`}>
                                         <img
-                                            src={user?.profileImage ? serverUrl + user?.profileImage : AllImages.profile}
+                                            src={user?.profileImage ? resolveMediaUrl(user?.profileImage) : AllImages.profile}
                                             alt={user?.name}
                                             className="w-10 h-10 object-cover rounded-full"
                                         />

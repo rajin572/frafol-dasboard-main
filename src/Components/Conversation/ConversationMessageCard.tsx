@@ -6,11 +6,9 @@ import ImagePreviewer from "../../utils/ImagePreviewer";
 const ConversationMessageCard = ({
   msg,
   userData,
-  imageUrl,
 }: {
   msg: IMessage;
   userData: any;
-  imageUrl: string;
 }) => {
   return (
     <div>
@@ -66,7 +64,6 @@ const ConversationMessageCard = ({
                     <ImagePreviewer
                       key={index}
                       msg={msg}
-                      imageUrl={imageUrl}
                       image={item}
                       userData={userData}
                     />

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { getImageUrl } from "../../helpers/config/envConfig";
+import { resolveMediaUrl } from "../../utils/resolveMediaUrl";
 import {
   selectSelectedChatUser,
   setSelectedChatUser,
@@ -19,7 +19,6 @@ const ConversationChatListCard = ({
   imageUrlSrc,
   onlineUsers,
 }: IConversationChatListCardProps) => {
-  const imageUrl = getImageUrl();
   const dispatch = useAppDispatch();
   const selectedConversation = useAppSelector(selectSelectedChatUser);
   const handleConversationSelect = (conversation: IConversation) => {
@@ -40,7 +39,7 @@ const ConversationChatListCard = ({
           <img
             loading="lazy"
             className="rounded-full aspect-square h-12 w-fit object-cover relative"
-            src={imageUrl + "/" + imageUrlSrc}
+            src={resolveMediaUrl(imageUrlSrc)}
             width={100}
             height={100}
             alt="Profile"

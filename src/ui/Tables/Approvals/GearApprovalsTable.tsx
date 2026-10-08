@@ -4,7 +4,7 @@ import { GoEye } from "react-icons/go";
 import ReuseTable from "../../../utils/ReuseTable";
 import { IGear } from "../../../types";
 import { AllImages } from "../../../../public/images/AllImages";
-import { getImageUrl } from "../../../helpers/config/envConfig";
+import { resolveMediaUrl } from "../../../utils/resolveMediaUrl";
 
 // Define the type for the props
 interface GearApprovalsTableProps {
@@ -26,7 +26,6 @@ const GearApprovalsTable: React.FC<GearApprovalsTableProps> = ({
   total,
   limit,
 }) => {
-  const serverUrl = getImageUrl();
   const columns = [
     {
       title: "ID",
@@ -42,7 +41,7 @@ const GearApprovalsTable: React.FC<GearApprovalsTableProps> = ({
       key: "gallery",
       render: (text: string[]) => (
         <img
-          src={text?.[0] ? serverUrl + text[0] : AllImages.cover}
+          src={text?.[0] ? resolveMediaUrl(text[0]) : AllImages.cover}
           alt="Item"
           width={50}
           height={50}

@@ -1,6 +1,6 @@
 import { IPackage } from "../../../types";
 import { AllImages } from "../../../../public/images/AllImages";
-import { getImageUrl } from "../../../helpers/config/envConfig";
+import { resolveMediaUrl } from "../../../utils/resolveMediaUrl";
 import { FaEuroSign } from "react-icons/fa6";
 import { LuClock } from "react-icons/lu";
 import ReuseButton from "../../Button/ReuseButton";
@@ -16,7 +16,6 @@ const ViewPackage = ({
   showDeclineModal: (record: IPackage) => void;
   currentRecord: IPackage;
 }) => {
-  const serverUrl = getImageUrl();
   return (
     <div className="p-1.5 rounded-xl border border-background-color mt-10 relative">
       <img
@@ -24,7 +23,7 @@ const ViewPackage = ({
         height={1000}
         src={
           currentRecord?.thumbnailImage
-            ? serverUrl + currentRecord?.thumbnailImage
+            ? resolveMediaUrl(currentRecord?.thumbnailImage)
             : AllImages?.cover
         }
         alt={currentRecord?.title}
@@ -104,7 +103,7 @@ const ViewPackage = ({
             <img
               src={
                 currentRecord?.authorId?.profileImage
-                  ? serverUrl + currentRecord?.authorId?.profileImage
+                  ? resolveMediaUrl(currentRecord?.authorId?.profileImage)
                   : AllImages?.profile
               }
               alt={currentRecord?.authorId?.name}
