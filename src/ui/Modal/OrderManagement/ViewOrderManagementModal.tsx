@@ -27,7 +27,8 @@ const ViewOrderManagementModal: React.FC<ViewOrderManagementModalProps> = ({
   // Payment invoices once the order is paid, final invoices once it is delivered.
   const showPaymentInvoices = isOrderPaid(
     currentRecord?.paymentStatus,
-    currentRecord?.paidAt
+    currentRecord?.paidAt,
+    currentRecord?.status
   );
   const showFinalInvoices = currentRecord?.status === "delivered";
 

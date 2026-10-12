@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
+import { Checkbox } from "antd";
 import ReuseTable from "../../utils/ReuseTable";
 import { formatDateTime } from "../../utils/dateFormet";
 
@@ -33,6 +34,16 @@ const AdminAllSubscribeTable: React.FC<AdminAllSubscribeTableProps> = ({
       title: "Email",
       dataIndex: "email", // Assuming "email" contains user info
       key: "email",
+    },
+    {
+      title: "Newsletter Consent",
+      key: "newsletterConsent",
+      // Subscribing requires selecting the newsletter consent checkbox.
+      render: () => (
+        <Checkbox checked disabled>
+          Checked
+        </Checkbox>
+      ),
     },
 
     {

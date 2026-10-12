@@ -1,6 +1,5 @@
 import { useState } from "react";
 import ReuseButton from "./ReuseButton";
-import { finalInvoices, paymentInvoices } from "../../utils/invoice/assembleInvoices";
 import { downloadInvoices } from "../../utils/invoice/downloadInvoices";
 import { InvoiceData, InvoiceSet } from "../../utils/invoice/invoiceTypes";
 
@@ -25,10 +24,10 @@ interface InvoiceButton {
   invoices: InvoiceData[];
 }
 
-// The four invoices of an order, one PDF per button, plus the client's combined PDFs: like on the
-// website, the client gets Professional -> Client and Admin -> Client as the two pages of one PDF.
-// The service fee invoices (Client - Admin) do not exist when the service fee is 0, so those
-// buttons, and the combined ones (which would be the same single page), are left out.
+// The four invoices of an order, one PDF per button: Professional -> Client and Admin -> Client,
+// for the payment (available once paid) and the final settlement (available once completed).
+// The service fee invoice (Admin -> Client) does not exist when the service fee is 0, so that
+// button is left out.
 const InvoiceDownloadButtons: React.FC<InvoiceDownloadButtonsProps> = ({
   orderId,
   getInvoices,
@@ -40,21 +39,25 @@ const InvoiceDownloadButtons: React.FC<InvoiceDownloadButtonsProps> = ({
 
   if (!showPayment && !showFinal) return null;
 
+  // A completed order was necessarily paid: once delivered, always show all four invoices, even
+  // if the order's own paid-flag was never set correctly.
+  const paymentVisible = showPayment || showFinal;
+
   const set = getInvoices();
   const single = (invoice?: InvoiceData): InvoiceData[] => (invoice ? [invoice] : []);
   const buttons: InvoiceButton[] = [
-    ...(showPayment
+    ...(paymentVisible
       ? [
           {
             key: "creatorPayment",
-            label: "Professional - Client (Payment)",
+            label: "Professional → Client (Payment)",
             fileSuffix: "professional-client-payment",
             invoices: single(set.creatorPayment),
           },
           {
             key: "feePayment",
-            label: "Client - Admin (Payment)",
-            fileSuffix: "client-admin-payment",
+            label: "Admin → Client (Payment)",
+            fileSuffix: "admin-client-payment",
             invoices: single(set.feePayment),
           },
         ]
@@ -63,35 +66,15 @@ const InvoiceDownloadButtons: React.FC<InvoiceDownloadButtonsProps> = ({
       ? [
           {
             key: "creatorFinal",
-            label: "Professional - Client (Final)",
+            label: "Professional → Client (Final)",
             fileSuffix: "professional-client-final",
             invoices: single(set.creatorFinal),
           },
           {
             key: "feeFinal",
-            label: "Client - Admin (Final)",
-            fileSuffix: "client-admin-final",
+            label: "Admin → Client (Final)",
+            fileSuffix: "admin-client-final",
             invoices: single(set.feeFinal),
-          },
-        ]
-      : []),
-    ...(showPayment && set.feePayment
-      ? [
-          {
-            key: "clientPayment",
-            label: "Both Invoices - Client (Payment)",
-            fileSuffix: "client-payment",
-            invoices: paymentInvoices(set),
-          },
-        ]
-      : []),
-    ...(showFinal && set.feeFinal
-      ? [
-          {
-            key: "clientFinal",
-            label: "Both Invoices - Client (Final)",
-            fileSuffix: "client-final",
-            invoices: finalInvoices(set),
           },
         ]
       : []),

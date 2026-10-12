@@ -56,7 +56,8 @@ const AdminAllDeliveryManagementTable: React.FC<
       title: "Order Type",
       dataIndex: "orderType",
       key: "orderType",
-      render: (text: string) => text.charAt(0).toUpperCase() + text.slice(1),
+      render: (text: string) =>
+        text ? text.charAt(0).toUpperCase() + text.slice(1) : "Direct",
     },
     {
       title: "Amount",
@@ -80,7 +81,7 @@ const AdminAllDeliveryManagementTable: React.FC<
           className={`${status === "delivered" ? "text-success" : "text-warning"
             } font-semibold`}
         >
-          {status.charAt(0).toUpperCase() + status.slice(1)}
+          {status ? status.charAt(0).toUpperCase() + status.slice(1) : "—"}
         </span>
       ),
     },

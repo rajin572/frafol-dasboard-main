@@ -95,7 +95,7 @@ const CommunityForumManagementTable: React.FC<
                                 : "text-yellow-500"
                     }
                 >
-                    {approvalStatus.charAt(0).toUpperCase() + approvalStatus.slice(1)}
+                    {approvalStatus ? approvalStatus.charAt(0).toUpperCase() + approvalStatus.slice(1) : "Pending"}
                 </span>
             ), // Show the status with color coding for approved, pending, and rejected
         },
