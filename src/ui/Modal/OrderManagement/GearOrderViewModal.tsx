@@ -6,6 +6,7 @@ import { formatDateWithAtTime } from "../../../utils/dateFormet";
 import InvoiceDownloadButtons from "../../Button/InvoiceDownloadButtons";
 import { buildGearInvoices } from "../../../utils/invoice/gearInvoices";
 import { isOrderPaid } from "../../../utils/invoice/invoiceStatus";
+import { TERMS_AND_CONDITIONS_TEXT_SK } from "../../../utils/consentTexts";
 
 interface GearOrderViewModalProps {
   isViewModalVisible: boolean;
@@ -133,6 +134,7 @@ const GearOrderViewModal: React.FC<GearOrderViewModalProps> = ({
             <span className="font-semibold">Terms and Conditions Accepted: </span>
             {currentRecord?.termsAndConditionsAccepted ? `Yes (${formatDateWithAtTime(currentRecord?.createdAt)})` : "No"}
           </p>
+          <p className="text-xs text-gray-500 italic mt-0.5">{TERMS_AND_CONDITIONS_TEXT_SK}</p>
         </div>
 
         {/* Company Details */}

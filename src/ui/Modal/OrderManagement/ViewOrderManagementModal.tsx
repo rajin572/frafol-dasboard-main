@@ -10,6 +10,11 @@ import { budgetLabels } from "../../../utils/budgetLabels";
 import InvoiceDownloadButtons from "../../Button/InvoiceDownloadButtons";
 import { buildEventInvoices } from "../../../utils/invoice/eventInvoices";
 import { isOrderPaid } from "../../../utils/invoice/invoiceStatus";
+import {
+  TERMS_AND_CONDITIONS_TEXT_SK,
+  EARLY_SERVICE_COMMENCEMENT_TEXT_SK,
+  WITHDRAWAL_RIGHT_ACKNOWLEDGEMENT_TEXT_SK,
+} from "../../../utils/consentTexts";
 
 interface ViewOrderManagementModalProps {
   isViewModalVisible: boolean;
@@ -236,18 +241,27 @@ const ViewOrderManagementModal: React.FC<ViewOrderManagementModalProps> = ({
           <h4 className="text-base sm:text-lg lg:text-xl xl:text-2xl text-secondary-color font-bold mb-2">
             Accepted Terms
           </h4>
-          <p className="text-xs sm:text-sm lg:text-base">
-            <span className="font-semibold">Terms and Conditions Accepted: </span>
-            {currentRecord?.termsAndConditionsAccepted ? `Yes (${formatDateWithAtTime(currentRecord?.createdAt)})` : "No"}
-          </p>
-          <p className="text-xs sm:text-sm lg:text-base">
-            <span className="font-semibold">Early Service Commencement Accepted: </span>
-            {currentRecord?.earlyServiceCommencementAccepted ? `Yes (${formatDateWithAtTime(currentRecord?.createdAt)})` : "No"}
-          </p>
-          <p className="text-xs sm:text-sm lg:text-base">
-            <span className="font-semibold">Withdrawal Right Acknowledgement Accepted: </span>
-            {currentRecord?.withdrawalRightAcknowledgementAccepted ? `Yes (${formatDateWithAtTime(currentRecord?.createdAt)})` : "No"}
-          </p>
+          <div className="mb-2">
+            <p className="text-xs sm:text-sm lg:text-base">
+              <span className="font-semibold">Terms and Conditions Accepted: </span>
+              {currentRecord?.termsAndConditionsAccepted ? `Yes (${formatDateWithAtTime(currentRecord?.createdAt)})` : "No"}
+            </p>
+            <p className="text-xs text-gray-500 italic mt-0.5">{TERMS_AND_CONDITIONS_TEXT_SK}</p>
+          </div>
+          <div className="mb-2">
+            <p className="text-xs sm:text-sm lg:text-base">
+              <span className="font-semibold">Early Service Commencement Accepted: </span>
+              {currentRecord?.earlyServiceCommencementAccepted ? `Yes (${formatDateWithAtTime(currentRecord?.createdAt)})` : "No"}
+            </p>
+            <p className="text-xs text-gray-500 italic mt-0.5">{EARLY_SERVICE_COMMENCEMENT_TEXT_SK}</p>
+          </div>
+          <div>
+            <p className="text-xs sm:text-sm lg:text-base">
+              <span className="font-semibold">Withdrawal Right Acknowledgement Accepted: </span>
+              {currentRecord?.withdrawalRightAcknowledgementAccepted ? `Yes (${formatDateWithAtTime(currentRecord?.createdAt)})` : "No"}
+            </p>
+            <p className="text-xs text-gray-500 italic mt-0.5">{WITHDRAWAL_RIGHT_ACKNOWLEDGEMENT_TEXT_SK}</p>
+          </div>
         </div>
 
 

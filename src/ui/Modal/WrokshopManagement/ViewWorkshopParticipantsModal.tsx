@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, Table } from "antd";
+import { Modal, Table, Tooltip } from "antd";
 import { useGetWorkshopParticipantsQuery } from "../../../redux/features/workshop/workshopApi";
 import { formatDateWithAtTime } from "../../../utils/dateFormet";
 import { IWorkshop, IWorkshopParticipant } from "../../../types";
@@ -9,6 +9,11 @@ import {
     isWorkshopCompleted,
 } from "../../../utils/invoice/workshopInvoices";
 import { isOrderPaid } from "../../../utils/invoice/invoiceStatus";
+import {
+    TERMS_AND_CONDITIONS_TEXT_SK,
+    EARLY_SERVICE_COMMENCEMENT_TEXT_SK,
+    WITHDRAWAL_RIGHT_ACKNOWLEDGEMENT_TEXT_SK,
+} from "../../../utils/consentTexts";
 
 interface ViewWorkshopParticipantsModalProps {
     isModalVisible: boolean;
@@ -92,22 +97,37 @@ const ViewWorkshopParticipantsModal: React.FC<ViewWorkshopParticipantsModalProps
             title: "T&C Accepted",
             dataIndex: "termsAndConditionsAccepted",
             key: "termsAndConditionsAccepted",
-            render: (_: unknown, record: IWorkshopParticipant) =>
-                record?.termsAndConditionsAccepted ? `Yes (${formatDateWithAtTime(record?.createdAt)})` : "No",
+            render: (_: unknown, record: IWorkshopParticipant) => (
+                <Tooltip title={TERMS_AND_CONDITIONS_TEXT_SK}>
+                    <span className="underline decoration-dotted cursor-help">
+                        {record?.termsAndConditionsAccepted ? `Yes (${formatDateWithAtTime(record?.createdAt)})` : "No"}
+                    </span>
+                </Tooltip>
+            ),
         },
         {
             title: "Early Service Accepted",
             dataIndex: "earlyServiceCommencementAccepted",
             key: "earlyServiceCommencementAccepted",
-            render: (_: unknown, record: IWorkshopParticipant) =>
-                record?.earlyServiceCommencementAccepted ? `Yes (${formatDateWithAtTime(record?.createdAt)})` : "No",
+            render: (_: unknown, record: IWorkshopParticipant) => (
+                <Tooltip title={EARLY_SERVICE_COMMENCEMENT_TEXT_SK}>
+                    <span className="underline decoration-dotted cursor-help">
+                        {record?.earlyServiceCommencementAccepted ? `Yes (${formatDateWithAtTime(record?.createdAt)})` : "No"}
+                    </span>
+                </Tooltip>
+            ),
         },
         {
             title: "Withdrawal Right Accepted",
             dataIndex: "withdrawalRightAcknowledgementAccepted",
             key: "withdrawalRightAcknowledgementAccepted",
-            render: (_: unknown, record: IWorkshopParticipant) =>
-                record?.withdrawalRightAcknowledgementAccepted ? `Yes (${formatDateWithAtTime(record?.createdAt)})` : "No",
+            render: (_: unknown, record: IWorkshopParticipant) => (
+                <Tooltip title={WITHDRAWAL_RIGHT_ACKNOWLEDGEMENT_TEXT_SK}>
+                    <span className="underline decoration-dotted cursor-help">
+                        {record?.withdrawalRightAcknowledgementAccepted ? `Yes (${formatDateWithAtTime(record?.createdAt)})` : "No"}
+                    </span>
+                </Tooltip>
+            ),
         },
         {
             title: "Invoices",

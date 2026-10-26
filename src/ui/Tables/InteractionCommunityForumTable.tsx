@@ -60,14 +60,14 @@ const InteractionCommunityForumTable: React.FC<
       dataIndex: "authorId", // Change from "userId" to "authorId"
       key: "authorId",
       render: (_: unknown, record: IInteractionCommunity) =>
-        `${record?.authorId.name}`, // Render author name
+        record?.authorId?.name || "—", // Render author name
     },
     {
       title: "Role",
       dataIndex: "authorId", // Change from "userId" to "authorId"
       key: "role",
       render: (_: unknown, record: IInteractionCommunity) =>
-        record?.authorId.role || "N/A", // Render role from authorId
+        record?.authorId?.role || "N/A", // Render role from authorId
     },
     {
       title: "Title",

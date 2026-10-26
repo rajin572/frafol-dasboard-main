@@ -41,13 +41,13 @@ const FeedbackTable: React.FC<FeedbackTableProps> = ({
       dataIndex: "userId", // Assuming "userId" contains user info
       key: "userId",
       render: (_: unknown, record: IFeedback) =>
-        `${record?.userId.name} ${record?.userId.sureName}`, // Render user name and surname
+        `${record?.userId?.name || ""} ${record?.userId?.sureName || ""}`.trim() || "—", // Render user name and surname
     },
     {
       title: "Role",
       dataIndex: "userId",
       key: "role",
-      render: (_: unknown, record: IFeedback) => record?.userId.role ? "Photographer & Videographer" : record?.userId.role, // Render the role from userId object
+      render: (_: unknown, record: IFeedback) => record?.userId?.role === "both" ? "Photographer & Videographer" : record?.userId?.role || "—", // Render the role from userId object
     },
     // {
     //   title: "Role",
@@ -59,8 +59,8 @@ const FeedbackTable: React.FC<FeedbackTableProps> = ({
       title: "Feedback",
       dataIndex: "text", // Assuming "text" is the issue or content
       key: "text",
-      render: (text: string) => (
-        <p>{text.length > 50 ? `${text.substring(0, 50)}...` : text}</p>
+      render: (text?: string) => (
+        <p>{text && text.length > 50 ? `${text.substring(0, 50)}...` : text || "—"}</p>
       ), // Truncate text if it's too long
     },
     {

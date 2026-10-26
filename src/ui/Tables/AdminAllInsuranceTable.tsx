@@ -43,8 +43,8 @@ const AdminAllInsuranceTable: React.FC<AdminAllInsuranceTableProps> = ({
         <div className="flex items-center gap-2">
           <img
             src={
-              record?.userId.profileImage
-                ? resolveMediaUrl(record?.userId.profileImage)
+              record?.userId?.profileImage
+                ? resolveMediaUrl(record?.userId?.profileImage)
                 : AllImages.profile
             }
             alt="Item"
@@ -52,7 +52,7 @@ const AdminAllInsuranceTable: React.FC<AdminAllInsuranceTableProps> = ({
             height={50}
             className="rounded w-10 h-10 object-cover"
           />
-          <p>{record?.userId.name}</p>
+          <p>{record?.userId?.name || "—"}</p>
         </div>
       ),
     },
@@ -61,7 +61,7 @@ const AdminAllInsuranceTable: React.FC<AdminAllInsuranceTableProps> = ({
       dataIndex: "fullName", // Assuming "fullName" contains user info
       key: "fullName",
       render: (_: unknown, record: any) =>
-        `${record?.userId.name} ${record?.userId.sureName}`, // Render user name and surname
+        `${record?.userId?.name || ""} ${record?.userId?.sureName || ""}`.trim() || "—", // Render user name and surname
     },
     {
       title: "Company Name",
