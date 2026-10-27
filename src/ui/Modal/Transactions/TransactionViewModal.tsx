@@ -29,7 +29,7 @@ const TransactionViewModal: React.FC<TransactionViewModalProps> = ({
   const paymentType = currentRecord.paymentType;
   const isSubscription = paymentType === "subscription";
 
-  // Event / gear / workshop: the four invoices of the order.
+  // Event / gear / workshop: the invoices of the order.
   const hasOrderInvoices =
     paymentType === "event" || paymentType === "gear" || paymentType === "workshop";
   const invoices = hasOrderInvoices ? getTransactionInvoices(currentRecord) : null;

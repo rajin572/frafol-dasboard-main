@@ -131,10 +131,9 @@ const GearOrderViewModal: React.FC<GearOrderViewModalProps> = ({
         <div className="bg-white rounded-lg border border-[#E1E1E1] p-4">
           <h3 className="font-semibold mb-2">Accepted Terms</h3>
           <p className="text-sm ">
-            <span className="font-semibold">Terms and Conditions Accepted: </span>
-            {currentRecord?.termsAndConditionsAccepted ? `Yes (${formatDateWithAtTime(currentRecord?.createdAt)})` : "No"}
+            <span className="font-semibold">{TERMS_AND_CONDITIONS_TEXT_SK}</span>{" "}
+            {currentRecord?.termsAndConditionsAccepted ? `— Áno (${formatDateWithAtTime(currentRecord?.createdAt)})` : "— Nie"}
           </p>
-          <p className="text-xs text-gray-500 italic mt-0.5">{TERMS_AND_CONDITIONS_TEXT_SK}</p>
         </div>
 
         {/* Company Details */}

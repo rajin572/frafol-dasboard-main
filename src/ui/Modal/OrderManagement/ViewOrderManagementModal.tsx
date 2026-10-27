@@ -243,24 +243,21 @@ const ViewOrderManagementModal: React.FC<ViewOrderManagementModalProps> = ({
           </h4>
           <div className="mb-2">
             <p className="text-xs sm:text-sm lg:text-base">
-              <span className="font-semibold">Terms and Conditions Accepted: </span>
-              {currentRecord?.termsAndConditionsAccepted ? `Yes (${formatDateWithAtTime(currentRecord?.createdAt)})` : "No"}
+              <span className="font-semibold">{TERMS_AND_CONDITIONS_TEXT_SK}</span>{" "}
+              {currentRecord?.termsAndConditionsAccepted ? `— Áno (${formatDateWithAtTime(currentRecord?.createdAt)})` : "— Nie"}
             </p>
-            <p className="text-xs text-gray-500 italic mt-0.5">{TERMS_AND_CONDITIONS_TEXT_SK}</p>
           </div>
           <div className="mb-2">
             <p className="text-xs sm:text-sm lg:text-base">
-              <span className="font-semibold">Early Service Commencement Accepted: </span>
-              {currentRecord?.earlyServiceCommencementAccepted ? `Yes (${formatDateWithAtTime(currentRecord?.createdAt)})` : "No"}
+              <span className="font-semibold">{EARLY_SERVICE_COMMENCEMENT_TEXT_SK}</span>{" "}
+              {currentRecord?.earlyServiceCommencementAccepted ? `— Áno (${formatDateWithAtTime(currentRecord?.createdAt)})` : "— Nie"}
             </p>
-            <p className="text-xs text-gray-500 italic mt-0.5">{EARLY_SERVICE_COMMENCEMENT_TEXT_SK}</p>
           </div>
           <div>
             <p className="text-xs sm:text-sm lg:text-base">
-              <span className="font-semibold">Withdrawal Right Acknowledgement Accepted: </span>
-              {currentRecord?.withdrawalRightAcknowledgementAccepted ? `Yes (${formatDateWithAtTime(currentRecord?.createdAt)})` : "No"}
+              <span className="font-semibold">{WITHDRAWAL_RIGHT_ACKNOWLEDGEMENT_TEXT_SK}</span>{" "}
+              {currentRecord?.withdrawalRightAcknowledgementAccepted ? `— Áno (${formatDateWithAtTime(currentRecord?.createdAt)})` : "— Nie"}
             </p>
-            <p className="text-xs text-gray-500 italic mt-0.5">{WITHDRAWAL_RIGHT_ACKNOWLEDGEMENT_TEXT_SK}</p>
           </div>
         </div>
 

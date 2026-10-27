@@ -6,7 +6,7 @@ import { InvoiceData, InvoiceSet } from "../../utils/invoice/invoiceTypes";
 interface InvoiceDownloadButtonsProps {
   // Full order ID, used for the file names.
   orderId: string;
-  // Builds the four invoices of the order (only called when a button is shown).
+  // Builds the invoices of the order (only called when a button is shown).
   getInvoices: () => InvoiceSet;
   // Payment invoices: once the order is paid.
   showPayment: boolean;
@@ -24,10 +24,10 @@ interface InvoiceButton {
   invoices: InvoiceData[];
 }
 
-// The four invoices of an order, one PDF per button: Professional -> Client and Admin -> Client,
-// for the payment (available once paid) and the final settlement (available once completed).
-// The service fee invoice (Admin -> Client) does not exist when the service fee is 0, so that
-// button is left out.
+// The invoices of an order, one PDF per button: Professional -> Client for the payment (available
+// once paid) and the final settlement (available once completed), and Admin -> Client, Frafol's
+// single service fee invoice, issued at payment. It does not exist when the service fee is 0, so
+// that button is left out.
 const InvoiceDownloadButtons: React.FC<InvoiceDownloadButtonsProps> = ({
   orderId,
   getInvoices,
@@ -39,7 +39,7 @@ const InvoiceDownloadButtons: React.FC<InvoiceDownloadButtonsProps> = ({
 
   if (!showPayment && !showFinal) return null;
 
-  // A completed order was necessarily paid: once delivered, always show all four invoices, even
+  // A completed order was necessarily paid: once delivered, always show the payment invoices, even
   // if the order's own paid-flag was never set correctly.
   const paymentVisible = showPayment || showFinal;
 
@@ -69,12 +69,6 @@ const InvoiceDownloadButtons: React.FC<InvoiceDownloadButtonsProps> = ({
             label: "Professional → Client (Final)",
             fileSuffix: "professional-client-final",
             invoices: single(set.creatorFinal),
-          },
-          {
-            key: "feeFinal",
-            label: "Admin → Client (Final)",
-            fileSuffix: "admin-client-final",
-            invoices: single(set.feeFinal),
           },
         ]
       : []),
