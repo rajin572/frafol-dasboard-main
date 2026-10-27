@@ -90,8 +90,8 @@ const AdminGearDeliveryTable: React.FC<AdminGearDeliveryTableProps> = ({
       dataIndex: "deliveryDate",
       key: "deliveryDate",
       render: (_: unknown, record: IDeliveryManagement) =>
-        record?.deliveryDate
-          ? new Date(record.deliveryDate).toLocaleDateString()
+        record?.statusTimestamps?.deliveredAt
+          ? new Date(record?.statusTimestamps?.deliveredAt).toLocaleDateString()
           : "N/A",
     },
     {
