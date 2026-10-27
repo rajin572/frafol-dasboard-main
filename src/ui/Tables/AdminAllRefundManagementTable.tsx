@@ -30,35 +30,39 @@ const AdminAllRefundManagementTable: React.FC<AdminAllRefundManagementTableProps
       key: "orderId",
     },
     {
-      title: "Client Name",
+      title: "Client Name & Email",
       key: "clientName",
-      render: (_: unknown, record: IRefundManagement) =>
-        record?.userId?.name || record?.name || "N/A",
+      render: (_: unknown, record: IRefundManagement) => {
+        return <div>
+          <p>{record?.userId?.name || record?.name || "N/A"}</p>
+          <p>{record?.userId?.email || record?.email || "N/A"}</p>
+        </div>
+      },
     },
-    {
-      title: "Bank Name",
-      key: "bankName",
-      render: (_: unknown, record: IRefundManagement) =>
-        record?.userId?.profileId?.bankName ||
-        record?.serviceProviderId?.profileId?.bankName ||
-        record?.userId?.bankName ||
-        record?.serviceProviderId?.bankName ||
-        (typeof record?.paymentId === "object" && record?.paymentId?.paymentMethod
-          ? String(record.paymentId.paymentMethod).toUpperCase()
-          : "—"),
-    },
-    {
-      title: "Bank Account Number",
-      key: "accountNumber",
-      render: (_: unknown, record: IRefundManagement) =>
-        record?.userId?.profileId?.accountNumber ||
-        record?.serviceProviderId?.profileId?.accountNumber ||
-        record?.userId?.accountNumber ||
-        record?.serviceProviderId?.accountNumber ||
-        record?.userId?.profileId?.iban ||
-        record?.serviceProviderId?.profileId?.iban ||
-        "—",
-    },
+    // {
+    //   title: "Bank Name",
+    //   key: "bankName",
+    //   render: (_: unknown, record: IRefundManagement) =>
+    //     record?.userId?.profileId?.bankName ||
+    //     record?.serviceProviderId?.profileId?.bankName ||
+    //     record?.userId?.bankName ||
+    //     record?.serviceProviderId?.bankName ||
+    //     (typeof record?.paymentId === "object" && record?.paymentId?.paymentMethod
+    //       ? String(record.paymentId.paymentMethod).toUpperCase()
+    //       : "—"),
+    // },
+    // {
+    //   title: "Bank Account Number",
+    //   key: "accountNumber",
+    //   render: (_: unknown, record: IRefundManagement) =>
+    //     record?.userId?.profileId?.accountNumber ||
+    //     record?.serviceProviderId?.profileId?.accountNumber ||
+    //     record?.userId?.accountNumber ||
+    //     record?.serviceProviderId?.accountNumber ||
+    //     record?.userId?.profileId?.iban ||
+    //     record?.serviceProviderId?.profileId?.iban ||
+    //     "—",
+    // },
     {
       title: "Photographer/Videographer",
       key: "photographer_videographer",
@@ -124,6 +128,7 @@ const AdminAllRefundManagementTable: React.FC<AdminAllRefundManagementTableProps
         const dateStr =
           record?.cancelApprovalDate ||
           record?.statusTimestamps?.cancelledAt ||
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           record?.statusHistory?.find((s: any) => s?.status === "cancelled")?.changedAt ||
           record?.refundDate ||
           record?.updatedAt ||
