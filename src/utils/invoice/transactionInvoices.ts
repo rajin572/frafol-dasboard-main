@@ -92,9 +92,9 @@ const workshopTransactionInvoices = (tx: ITransaction): TransactionInvoices | nu
   const workshop = asObject(tx.workshopId);
   if (!workshop) return null;
 
-  // Workshop transactions carry no dedicated order ID (unlike event/gear): fall back to the
-  // transaction's own id, same convention used in the transactions table.
-  const orderId = tx.orderId || tx._id.slice(-8).toUpperCase();
+  // The workshop order's ID is on the populated workshop. Fall back to the transaction's own
+  // order ID, and last to the transaction id (same convention as the transactions table).
+  const orderId = workshop.orderId || tx.orderId || tx._id.slice(-8).toUpperCase();
 
   // Same shape as a workshop participant: the transaction mirrors the registration's billing data.
   const record = {

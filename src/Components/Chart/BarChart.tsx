@@ -44,7 +44,7 @@ const Bar_Chart = ({
             itemStyle={{ color: "#0a0a08" }}
             labelStyle={{ color: "#202020" }}
             formatter={(value: number): [string, string] => [
-              `€${value}`,
+              `€${(Number(value) || 0).toFixed(2)}`,
               "Earning",
             ]}
             labelFormatter={(label: string) => `Month: ${label}`}

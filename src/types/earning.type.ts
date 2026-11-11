@@ -69,6 +69,8 @@ export interface ITransaction {
     vatPercent?: number;
     price: number;
     mainPrice: number;
+    // The workshop order's ID, e.g. "WORKSHOP-20261106-0001" (null on very old records).
+    orderId?: string | null;
   } | string;
   // subscription
   subscriptionDays?: number;

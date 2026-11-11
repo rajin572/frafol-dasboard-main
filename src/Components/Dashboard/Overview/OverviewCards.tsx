@@ -38,7 +38,7 @@ const OverviewCards = ({ stats }: any) => {
       background: "#ffffff",
       name: "Earrings From Commission",
       icon: <FaEuroSign className="size-6 text-secondary-color" />,
-      count: `${(stats?.totalCommission || 0).toLocaleString()}€`,
+      count: `${(stats?.totalCommission || 0).toLocaleString(undefined, { maximumFractionDigits: 2 })}€`,
     },
   ];
   return (

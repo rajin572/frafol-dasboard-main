@@ -1,11 +1,11 @@
 
-import { Modal } from "antd";
+import { Checkbox, Modal } from "antd";
 import { AllImages } from "../../../../public/images/AllImages";
 import { FaStar } from "react-icons/fa";
 import ReuseButton from "../../Button/ReuseButton";
 import { IUser } from "../../../types";
 import { resolveMediaUrl } from "../../../utils/resolveMediaUrl";
-import { formatDate } from "../../../utils/dateFormet";
+import { formatDate, formatDateWithAtTime } from "../../../utils/dateFormet";
 interface UserModalProps {
   isViewModalVisible: boolean;
   handleCancel: () => void;
@@ -221,6 +221,55 @@ const UserModal: React.FC<UserModalProps> = ({
                 </div>
               </div>
             )}
+          </div>
+
+          {/* Registration consents. Both checkboxes are required to create an account,
+              so the account's createdAt is the moment the user agreed to them. */}
+          <div className="mt-5">
+            <h4 className="text-base sm:text-lg lg:text-xl text-secondary-color font-bold mb-2">
+              Accepted Terms
+            </h4>
+            <div className="flex flex-col gap-3 bg-secondary-color/5 p-3 rounded">
+              <div>
+                <Checkbox checked disabled>
+                  <span className="text-xs sm:text-sm lg:text-base font-semibold">
+                    Súhlasím s obchodnými podmienkami
+                  </span>
+                </Checkbox>
+                <p className="text-xs sm:text-sm lg:text-base ml-6">
+                  Vytvorením účtu súhlasíte s našimi Všeobecné obchodné podmienky
+                  Zmluvné vzťahy a Všeobecné obchodné podmienky Online trh.
+                </p>
+                <p className="text-xs sm:text-sm lg:text-base ml-6 text-[#989898]">
+                  Agreed on: {formatDateWithAtTime(currentRecord?.createdAt)}
+                </p>
+              </div>
+              <div>
+                <Checkbox checked disabled>
+                  <span className="text-xs sm:text-sm lg:text-base font-semibold">
+                    Súhlasím so GDPR
+                  </span>
+                </Checkbox>
+                <p className="text-xs sm:text-sm lg:text-base ml-6 text-[#989898]">
+                  Agreed on: {formatDateWithAtTime(currentRecord?.createdAt)}
+                </p>
+              </div>
+              {/* Optional checkbox on the client sign-up form only */}
+              {activeTab !== "professional" && (
+                <div>
+                  <Checkbox checked={!!currentRecord?.newsLetterSub} disabled>
+                    <span className="text-xs sm:text-sm lg:text-base font-semibold">
+                      Prihlásiť sa na odber noviniek (voliteľné)
+                    </span>
+                  </Checkbox>
+                  {currentRecord?.newsLetterSub && (
+                    <p className="text-xs sm:text-sm lg:text-base ml-6 text-[#989898]">
+                      Subscribed on: {formatDateWithAtTime(currentRecord?.createdAt)}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
           {
             activeTab === "professional" && (

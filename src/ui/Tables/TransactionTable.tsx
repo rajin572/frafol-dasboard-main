@@ -39,6 +39,15 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
         ) {
           return record.eventOrderId.orderId;
         }
+        if (
+          record.paymentType === "workshop" &&
+          record.workshopId &&
+          typeof record.workshopId !== "string" &&
+          record.workshopId.orderId
+        ) {
+          // The workshop order's ID lives on the populated workshop.
+          return record.workshopId.orderId;
+        }
         return record._id.slice(-8).toUpperCase();
       },
     },

@@ -116,6 +116,7 @@ const TransactionViewModal: React.FC<TransactionViewModalProps> = ({
                 <span className="font-semibold">Order ID:</span>
                 <span>
                   {eventOrder?.orderId ||
+                    workshop?.orderId ||
                     currentRecord.orderId ||
                     currentRecord._id.slice(-8).toUpperCase()}
                 </span>

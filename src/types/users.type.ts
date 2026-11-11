@@ -41,4 +41,6 @@ export interface IUser {
   bannerImages: string[];
   travelTowns: string[];
   dateOfBirth: string;
+  // Optional newsletter checkbox on the client sign-up form.
+  newsLetterSub?: boolean;
 }

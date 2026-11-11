@@ -47,7 +47,7 @@ const InvoiceWorkshopFromAdminSide = ({
   const mainPrice = workshop?.mainPrice || 0;
   const platformCommission = mainPrice - price - vatAmount;
   const invoiceRef =
-    record.orderId || record._id?.slice(-8).toUpperCase() || "—";
+    workshop?.orderId || record.orderId || record._id?.slice(-8).toUpperCase() || "—";
 
   // Street + zip + town (instructor's registered address)
   const professionalAddressParts = [

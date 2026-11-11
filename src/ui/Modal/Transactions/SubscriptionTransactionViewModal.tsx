@@ -1,6 +1,7 @@
-import { Modal } from "antd";
+import { Checkbox, Modal } from "antd";
 import SubscriptionInvoiceButton from "../../Button/SubscriptionInvoiceButton";
 import { ITransaction } from "../../../types";
+import { formatDateWithAtTime } from "../../../utils/dateFormet";
 
 interface Props {
   isViewModalVisible: boolean;
@@ -92,6 +93,25 @@ const SubscriptionTransactionViewModal: React.FC<Props> = ({
             <span className="text-success">
               {currentRecord.amount?.toFixed(2)}€
             </span>
+          </div>
+        </div>
+
+        {/* The subscription checkout cannot be submitted without this checkbox, so the
+            transaction's createdAt is the moment the subscriber agreed to it. */}
+        <div className="mt-5">
+          <h4 className="text-sm sm:text-base lg:text-lg text-secondary-color font-bold mb-2">
+            Accepted Terms
+          </h4>
+          <div className="bg-secondary-color/5 p-3 rounded">
+            <Checkbox checked disabled>
+              <span className="text-xs sm:text-sm lg:text-base">
+                Súhlasím s našimi Všeobecné obchodné podmienky Zmluvné vzťahy a
+                Všeobecné obchodné podmienky Online trh.
+              </span>
+            </Checkbox>
+            <p className="text-xs sm:text-sm lg:text-base ml-6 text-[#989898]">
+              Agreed on: {formatDateWithAtTime(currentRecord.createdAt)}
+            </p>
           </div>
         </div>
 
