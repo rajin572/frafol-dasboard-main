@@ -32,6 +32,17 @@ const eventTransactionInvoices = (tx: ITransaction): TransactionInvoices | null 
     ...order,
     serviceProviderId: { ...asObject(order.serviceProviderId), ...tx.serviceProviderId },
     userId: { ...asObject(order.userId), ...tx.userId },
+    // The billing choice (private person or company) is stored on the transaction, the populated
+    // order may not carry it. Without it a private customer got the profile's company details.
+    isRegisterAsCompany: order.isRegisterAsCompany ?? tx.isRegisterAsCompany,
+    companyName: order.companyName ?? tx.companyName,
+    name: order.name ?? tx.name,
+    ICO: order.ICO ?? tx.ICO,
+    DIC: order.DIC ?? tx.DIC,
+    IC_DPH: order.IC_DPH ?? tx.IC_DPH,
+    streetAddress: order.streetAddress ?? tx.streetAddress,
+    town: order.town ?? tx.town,
+    zipCode: order.zipCode ?? tx.zipCode,
     // Payment date: the order's own, else when it went in progress, else the transaction itself.
     paidAt: order.paidAt || (inProgressAt ? new Date(inProgressAt).toISOString() : tx.createdAt),
   } as IEventOrder;
