@@ -58,8 +58,6 @@ const ConversationMessage = ({ userData, onlineUsers }: any) => {
     }
   }, [messages, selectedConversation?.chat?._id, page]);
 
-  console.log(allMessages);
-
   // Append/prepend messages on fetch
   useEffect(() => {
     if (!allMessages?.data) return;
@@ -110,7 +108,18 @@ const ConversationMessage = ({ userData, onlineUsers }: any) => {
 
   // New socket message handler
   const handleMessage = useCallback((message: any) => {
-    setMessages((prev) => [...prev, message]);
+    setMessages((prev) => {
+      // The same message can arrive twice: replace it instead of showing it twice.
+      const existing = message?._id
+        ? prev.findIndex((m) => m?._id === message._id)
+        : -1;
+      if (existing !== -1) {
+        const next = [...prev];
+        next[existing] = { ...prev[existing], ...message };
+        return next;
+      }
+      return [...prev, message];
+    });
 
     setTimeout(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -125,10 +134,14 @@ const ConversationMessage = ({ userData, onlineUsers }: any) => {
       socket.connect();
     }
 
-    socket.emit("join", roomId.toString());
+    const joinRoom = () => socket.emit("join", roomId.toString());
+    joinRoom();
+    // After a dropped connection the server forgets the room: join again on every reconnect.
+    socket.on("connect", joinRoom);
     socket.on(`message_received::${roomId}`, handleMessage);
 
     return () => {
+      socket.off("connect", joinRoom);
       socket.off(`message_received::${roomId}`, handleMessage);
       socket.emit("leave", roomId);
     };
@@ -136,10 +149,9 @@ const ConversationMessage = ({ userData, onlineUsers }: any) => {
 
   const convertnewMessageFirst = [...messages].sort(
     (a: IMessage, b: IMessage) =>
-      new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      new Date(a.createdAt || (a as any).time).getTime() -
+      new Date(b.createdAt || (b as any).time).getTime()
   );
-
-  console.log(messages);
 
   return (
     <div
@@ -175,7 +187,7 @@ const ConversationMessage = ({ userData, onlineUsers }: any) => {
                   <span className="font-bold text-base sm:text-lg lg:text-xl flex items-center gap-1">
                     {selectedConversation?.chat?.users?.[0]?.name}
                     <Tooltip title="Online">
-                      {onlineUsers.includes(
+                      {onlineUsers?.includes(
                         selectedConversation?.chat?.users?.[0]?._id
                       ) && (
                         <div className="size-2 rounded-full bg-green-500"></div>

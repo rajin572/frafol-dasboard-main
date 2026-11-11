@@ -25,8 +25,6 @@ const ConversationChatList = ({ userData, onlineUsers }: any) => {
   const seletedConversation = useAppSelector(selectSelectedChatUser);
   const [chatList, setChatList] = useState<IConversation[]>([]);
 
-  console.log("chatList", searchTerm);
-
   const { data: allChatList, isFetching: isAllChatFeacthing } =
     useGetConversationListQuery(
       {
@@ -38,7 +36,11 @@ const ConversationChatList = ({ userData, onlineUsers }: any) => {
     );
 
   const handleNewMessage = useCallback((message: any) => {
-    const { chatId, text, sender, time } = message;
+    const { chatId, text: rawText, sender, time: rawTime } = message;
+    // A picture without text would otherwise leave the preview empty.
+    const text = rawText || (message?.images?.length > 0 ? "Image" : "");
+    // Guarantee a valid, recent timestamp so the conversation sorts to the top.
+    const time = rawTime || message?.createdAt || new Date().toISOString();
 
     // Find if this conversation already exists
     setChatList((prevChatList: IConversation[]) => {
@@ -48,22 +50,21 @@ const ConversationChatList = ({ userData, onlineUsers }: any) => {
 
       if (existingIndex !== -1) {
         // Update the existing conversation's lastMessage and updatedAt
-        const updatedList = [...prevChatList];
-        updatedList[existingIndex] = {
-          ...updatedList[existingIndex],
+        const updated: IConversation = {
+          ...prevChatList[existingIndex],
           lastMessage: text,
-          lastMessageSender: sender._id,
+          lastMessageSender: sender?._id,
           lastMessageCreatedAt: time,
-          unreadMessageCount: updatedList[existingIndex].unreadMessageCount + 1,
+          unreadMessageCount: (prevChatList[existingIndex].unreadMessageCount || 0) + 1,
         };
-        return updatedList;
+        return [updated, ...prevChatList.filter((_, index) => index !== existingIndex)];
       } else {
         // If this is a new conversation
         const newConversation: IConversation = {
           chat: {
             _id: chatId,
             users: [sender], // you might need to merge with self if needed
-            createdBy: sender._id,
+            createdBy: sender?._id,
             unreadCounts: 1,
             blockedUsers: null,
             createdAt: time,
@@ -71,7 +72,7 @@ const ConversationChatList = ({ userData, onlineUsers }: any) => {
             __v: 0,
           },
           lastMessage: text,
-          lastMessageSender: sender._id,
+          lastMessageSender: sender?._id,
           unreadMessageCount: 1,
           message: text,
           lastMessageCreatedAt: time,
@@ -82,36 +83,28 @@ const ConversationChatList = ({ userData, onlineUsers }: any) => {
   }, []);
 
   useEffect(() => {
-    console.log("🧠 Checking socket:", socket);
-
     if (!socket) {
-      console.warn("❌ Socket not ready yet.");
       return;
     }
 
     if (!socket.connected) {
       socket.connect();
     }
-    socket.on(`newMessage`, (message: any) => {
-      console.log(" New Message Received from socket:", message);
+    const onNewMessage = (message: any) => {
       handleNewMessage(message);
-    });
-    socket.on("onlineUser", (online: any) => {
-      console.log("Online Users:", online);
+    };
+    const onOnlineUser = (online: any) => {
       dispatch(setOnlineUsers(online));
-    });
+    };
 
-    // const handleNewMessageSocket = (message: any) => {
-    //   console.log("📨 New Message Received from socket:", message);
-    // };
+    socket.on(`newMessage`, onNewMessage);
+    socket.on("onlineUser", onOnlineUser);
 
+    // Remove exactly the handlers added above. The old cleanup passed brand-new functions to
+    // `off`, which removes nothing, so every re-run stacked another set of listeners.
     return () => {
-      socket.off("onlineUser", (message: any) => {
-        console.log("📨 onlineUser Received from socket:", message);
-      });
-      socket.off("newMessage", (message: any) => {
-        console.log("📨New Message Off:", message);
-      });
+      socket.off("onlineUser", onOnlineUser);
+      socket.off("newMessage", onNewMessage);
     };
   }, [dispatch, handleNewMessage, socket, userData?.userId]);
 

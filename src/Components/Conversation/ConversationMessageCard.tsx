@@ -94,7 +94,7 @@ const ConversationMessageCard = ({
                       : "text-left"
                   }`}
                 >
-                  {formatDateTime(msg?.createdAt)}
+                  {formatDateTime(msg?.createdAt || (msg as any)?.time)}
                 </p>
               )}
             </div>

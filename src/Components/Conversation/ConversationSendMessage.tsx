@@ -18,7 +18,6 @@ const ConversationSendMessage = ({ socket }: any) => {
   const selectedConversation = useAppSelector(selectSelectedChatUser);
   const serverUrl = getBaseUrl();
   const [form] = Form.useForm();
-  const [isUploadLoading, setIsUploadLoading] = useState<boolean>(false);
   const [textValue, setTextValue] = useState<string | null>(null);
   const [uploadedImages, setUploadedImages] = useState<string[]>([]); // Use an array for uploaded image URLs
 
@@ -26,18 +25,20 @@ const ConversationSendMessage = ({ socket }: any) => {
   useEffect(() => {
     setUploadedImages([]);
     form.setFieldValue("message", "");
+    setTextValue(null);
   }, [selectedConversation?.chat?._id, form]);
 
-  // Handle image selection
-  const handleImageChange = ({ fileList: newFileList }: any) => {
-    const latestFile = newFileList?.[0];
-    if (latestFile) uploadImage(latestFile);
-  };
+  // How many uploads are running (several files can be picked at once).
+  const [pendingUploads, setPendingUploads] = useState(0);
+  const [isSending, setIsSending] = useState(false);
+  const isUploadLoading = pendingUploads > 0;
 
-  const uploadImage = async (file: any) => {
-    setIsUploadLoading(true);
+  const MAX_FILES = 5;
+
+  const uploadImage = async (file: File) => {
+    setPendingUploads((n) => n + 1);
     const formData = new FormData();
-    formData.append("images", file.originFileObj);
+    formData.append("images", file);
 
     try {
       const response = await axios.post(
@@ -51,50 +52,51 @@ const ConversationSendMessage = ({ socket }: any) => {
         }
       );
 
-      console.log(response);
-
       if (response?.data?.data?.length > 0) {
         setUploadedImages((prev) => [...prev, response?.data?.data[0]]);
       }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error: any) {
+    } catch {
       toast.error("Failed to upload image");
     }
-    setIsUploadLoading(false);
+    setPendingUploads((n) => Math.max(n - 1, 0));
   };
-
-  console.log(uploadedImages);
 
   const handleDeleteImage = (imageUrl: string) => {
     // Remove the image from the uploaded images list
     setUploadedImages((prev) => prev.filter((url) => url !== imageUrl));
-    setIsUploadLoading(false);
   };
 
   const handleMessageSend = async (values: any) => {
+    if (isSending || isUploadLoading) return;
+
+    // Whitespace-only text is not a message.
+    const text = (values?.message || "").trim();
+    if (!text && uploadedImages.length === 0) return;
+
     const data: any = {
       chatId: selectedConversation?.chat?._id,
-      ...(values?.message?.length > 0 ? { text: values?.message } : {}),
+      ...(text.length > 0 ? { text } : {}),
       ...(uploadedImages.length > 0 ? { images: uploadedImages } : {}),
     };
 
-    console.log(data);
-
-    try {
-      socket?.emit("send-message", data, (res: any) => {
-        console.log(res);
-        if (res?.success) {
-          setUploadedImages([]); // Clear uploaded images after sending
-          form.resetFields();
-          setTextValue(null);
-        }
-      });
-    } catch (error: any) {
-      toast.error(
-        error?.data?.message || error?.message || "Failed to send message",
-        { duration: 2000 }
-      );
+    if (!socket?.connected) {
+      toast.error("You are not connected. Please try again in a moment.", { duration: 2000 });
+      return;
     }
+
+    setIsSending(true);
+    // `timeout` makes sure the callback also runs when the server never answers, so the send
+    // button cannot stay locked and the user is told the message was not sent.
+    socket.timeout(10000).emit("send-message", data, (err: any, res: any) => {
+      setIsSending(false);
+      if (!err && res?.success) {
+        setUploadedImages([]); // Clear uploaded images after sending
+        form.resetFields();
+        setTextValue(null);
+        return;
+      }
+      toast.error(res?.message || "Failed to send message", { duration: 2000 });
+    });
   };
   return (
     <div>
@@ -158,15 +160,7 @@ const ConversationSendMessage = ({ socket }: any) => {
               <Form.Item className="!p-0 !m-0 shrink-0" name="image">
                 <Upload
                   fileList={[]}
-                  onChange={handleImageChange}
-                  customRequest={(options) => {
-                    setTimeout(() => {
-                      if (options.onSuccess) {
-                        options.onSuccess("ok");
-                      }
-                    }, 1000);
-                  }}
-                  maxCount={5} // Allow multiple files
+                  multiple
                   accept=".jpg,.jpeg,.png,.gif,.zip,.pdf,.svg,.mp4,.mov,.avi,.mkv" // Accept specific file types
                   beforeUpload={(file) => {
                     const validTypes = [
@@ -190,8 +184,16 @@ const ConversationSendMessage = ({ socket }: any) => {
                       return Upload.LIST_IGNORE; // Ignore invalid file type
                     }
 
-                    // If file type is valid, allow the upload
-                    return true;
+                    if (uploadedImages.length + pendingUploads >= MAX_FILES) {
+                      toast.error(`You can attach up to ${MAX_FILES} files.`);
+                      return Upload.LIST_IGNORE;
+                    }
+
+                    // Upload straight from here and keep antd's own list out of it. The old
+                    // onChange handler fired once per status change, so every file was
+                    // uploaded twice.
+                    uploadImage(file);
+                    return Upload.LIST_IGNORE;
                   }}
                   showUploadList={false}
                 >
@@ -206,7 +208,7 @@ const ConversationSendMessage = ({ socket }: any) => {
               </div>
             ) : (
               <button
-                disabled={!textValue?.length && uploadedImages.length === 0}
+                disabled={isSending || (!textValue?.trim().length && uploadedImages.length === 0)}
                 className="shrink-0 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 type="submit"
               >
