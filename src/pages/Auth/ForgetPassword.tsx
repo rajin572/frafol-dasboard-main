@@ -13,6 +13,7 @@ import tryCatchWrapper from "../../utils/tryCatchWrapper";
 import { Form } from "antd";
 import { useForgetPasswordMutation } from "../../redux/features/auth/authApi";
 import Cookies from "js-cookie";
+import { markOtpSent } from "../../hooks/useOtpCooldown";
 
 const ForgotPassword = () => {
   const [form] = Form.useForm();
@@ -42,6 +43,8 @@ const ForgotPassword = () => {
         path: "/",
         expires: 1,
       });
+      // The code was just sent: start the 2-minute "resend" countdown on the OTP page.
+      markOtpSent();
       router("/forgot-password/otp-verify");
     }
   };

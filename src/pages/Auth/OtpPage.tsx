@@ -12,10 +12,14 @@ import {
 } from "../../redux/features/auth/authApi";
 import tryCatchWrapper from "../../utils/tryCatchWrapper";
 import Cookies from "js-cookie";
+import { useOtpCooldown } from "../../hooks/useOtpCooldown";
 
 const OTPVerify = () => {
   const router = useNavigate();
   const [otp, setOtp] = useState("");
+  // "Click to resend" is allowed once every 2 minutes; the countdown survives a reload.
+  const { canResend, restart, label } = useOtpCooldown();
+  const [resending, setResending] = useState(false);
 
   const forgottenEmail = JSON.parse(
     Cookies.get("frafoldashboard_forgetEmail") || "null"
@@ -50,7 +54,9 @@ const OTPVerify = () => {
   };
 
   const handleResendOtp = async () => {
-    await tryCatchWrapper(
+    if (!canResend || resending) return;
+    setResending(true);
+    const res = await tryCatchWrapper(
       resendOtp,
       {
         body: {
@@ -59,6 +65,8 @@ const OTPVerify = () => {
       },
       "Sending OTP..."
     );
+    setResending(false);
+    if (res?.statusCode === 200 || res?.success) restart();
   };
 
   console.log(forgottenEmail);
@@ -103,12 +111,14 @@ const OTPVerify = () => {
             </Form>
             <div className="flex justify-center gap-2 py-1 mt-5">
               <p>Didn’t receive code?</p>
-              <p
+              <button
+                type="button"
                 onClick={handleResendOtp}
-                className="!text-secondary-color !underline font-semibold cursor-pointer"
+                disabled={!canResend || resending}
+                className="!text-secondary-color !underline font-semibold cursor-pointer disabled:cursor-not-allowed disabled:!no-underline disabled:!text-base-color/45 tabular-nums"
               >
-                Click to resend
-              </p>
+                Click to resend{!canResend && ` (${label})`}
+              </button>
             </div>
           </div>
         </div>
