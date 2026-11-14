@@ -3,6 +3,7 @@ import ReuseTable from "../../utils/ReuseTable";
 import { Tooltip } from "antd";
 import ReuseButton from "../Button/ReuseButton";
 import { IRefundManagement } from "../../types/refundManagement.type";
+import { isRefundCompleted } from "../../utils/refundStatus";
 
 interface AdminAllRefundManagementTableProps {
   data: IRefundManagement[];
@@ -151,18 +152,15 @@ const AdminAllRefundManagementTable: React.FC<AdminAllRefundManagementTableProps
       },
     },
     {
-      title: "Payment Status",
-      dataIndex: "paymentStatus",
-      key: "paymentStatus",
-      render: (status: string) => {
-        const isPaid =
-          status?.toLowerCase() === "paid" ||
-          status?.toLowerCase() === "refunded";
+      title: "Refund Status",
+      key: "refundStatus",
+      render: (_: unknown, record: IRefundManagement) => {
+        const refunded = isRefundCompleted(record);
         return (
           <span
-            className={`${isPaid ? "text-success" : "text-error"} font-semibold`}
+            className={`${refunded ? "text-success" : "text-error"} font-semibold`}
           >
-            {isPaid ? "Paid" : "Unpaid"}
+            {refunded ? "Refunded" : "Pending"}
           </span>
         );
       },
@@ -171,9 +169,7 @@ const AdminAllRefundManagementTable: React.FC<AdminAllRefundManagementTableProps
       title: "Action",
       key: "action",
       render: (_: unknown, record: IRefundManagement) => {
-        const isAlreadyPaidOrRefunded =
-          record?.paymentStatus?.toLowerCase() === "paid" ||
-          record?.paymentStatus?.toLowerCase() === "refunded";
+        const isAlreadyPaidOrRefunded = isRefundCompleted(record);
 
         return (
           <div>

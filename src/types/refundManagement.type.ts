@@ -115,7 +115,17 @@ export interface IRefundManagement {
   refundDate?: string;
   status: "cancelled" | "pending" | "refunded" | "declined" | string;
   paymentStatus: "Paid" | "Unpaid" | "Refunded" | "pending" | "received" | "completed" | string;
-  refundStatus?: "pending" | "refunded" | "declined" | "completed" | "processing";
+  // "pending" on event orders, "unpaid" on gear orders while the refund is open
+  refundStatus?: "pending" | "unpaid" | "refunded" | "paid" | "declined" | "completed" | "processing" | string;
+  payoutCompleted?: boolean;
+  payment?: {
+    _id?: string;
+    transactionId?: string;
+    amount?: number;
+    paymentStatus?: string;
+    paymentMethod?: string;
+    createdAt?: string;
+  };
   isDeleted?: boolean;
   statusTimestamps?: IStatusTimestamps;
   statusHistory?: IStatusHistory[];

@@ -30,7 +30,8 @@ const AdminRefundManagement = () => {
   const [eventOrderCompleteRefund] = useEventOrderCompleteRefundMutation();
   const [gearOrderCompleteRefund] = useGearOrderCompleteRefundMutation();
 
-  // 1. Photography & Videography cancelled orders (/event-order?status=cancelled&searchTerms=...)
+  // 1. Photography & Videography refunds: GET /event-order/refund-management
+  //    Response: { data: { meta: { total, ... }, result: [...] } }
   const {
     data: eventOrdersData,
     isFetching: isEventOrdersFetching,
@@ -39,7 +40,7 @@ const AdminRefundManagement = () => {
     {
       page,
       limit,
-      searchTerms: searchText,
+      searchTerm: searchText,
       ...(paymentFilter ? { paymentStatus: paymentFilter } : {}),
     },
     {
@@ -49,25 +50,15 @@ const AdminRefundManagement = () => {
     }
   );
 
-  const eventOrdersList: IRefundManagement[] = useMemo(() => {
-    if (Array.isArray(eventOrdersData?.data)) {
-      return eventOrdersData.data;
-    }
-    if (Array.isArray(eventOrdersData?.data?.data)) {
-      return eventOrdersData.data.data;
-    }
-    return [];
-  }, [eventOrdersData]);
+  const eventOrdersList: IRefundManagement[] = useMemo(
+    () => (Array.isArray(eventOrdersData?.data?.result) ? eventOrdersData.data.result : []),
+    [eventOrdersData]
+  );
 
-  const eventOrdersTotal: number = useMemo(() => {
-    return (
-      eventOrdersData?.meta?.total ??
-      eventOrdersData?.data?.meta?.total ??
-      eventOrdersList.length
-    );
-  }, [eventOrdersData, eventOrdersList]);
+  const eventOrdersTotal: number =
+    eventOrdersData?.data?.meta?.total ?? eventOrdersList.length;
 
-  // 2. Gear cancelled orders (/gear-order?orderStatus=cancelled&searchTerms=...)
+  // 2. Gear refunds: GET /gear-order/refund-management (same response shape)
   const {
     data: gearOrdersData,
     isFetching: isGearOrdersFetching,
@@ -76,7 +67,7 @@ const AdminRefundManagement = () => {
     {
       page,
       limit,
-      searchTerms: searchText,
+      searchTerm: searchText,
       ...(paymentFilter ? { paymentStatus: paymentFilter } : {}),
     },
     {
@@ -86,39 +77,20 @@ const AdminRefundManagement = () => {
     }
   );
 
-  const gearOrdersList: IRefundManagement[] = useMemo(() => {
-    if (Array.isArray(gearOrdersData?.data?.data)) {
-      return gearOrdersData.data.data;
-    }
-    if (Array.isArray(gearOrdersData?.data)) {
-      return gearOrdersData.data;
-    }
-    return [];
-  }, [gearOrdersData]);
+  const gearOrdersList: IRefundManagement[] = useMemo(
+    () => (Array.isArray(gearOrdersData?.data?.result) ? gearOrdersData.data.result : []),
+    [gearOrdersData]
+  );
 
-  const gearOrdersTotal: number = useMemo(() => {
-    return (
-      gearOrdersData?.data?.meta?.total ??
-      gearOrdersData?.meta?.total ??
-      gearOrdersList.length
-    );
-  }, [gearOrdersData, gearOrdersList]);
+  const gearOrdersTotal: number =
+    gearOrdersData?.data?.meta?.total ?? gearOrdersList.length;
 
-  // Dynamic filter dropdown options according to active tab
-  const paymentFilterOptions = useMemo(() => {
-    if (activeTab === "professional") {
-      return [
-        { label: "All", value: "" },
-        { label: "Unpaid", value: "Unpaid" },
-        { label: "Paid", value: "Paid" },
-      ];
-    }
-    return [
-      { label: "All", value: "" },
-      { label: "Pending", value: "pending" },
-      { label: "Received", value: "received" },
-    ];
-  }, [activeTab]);
+  // Both endpoints use the same filter: paymentStatus=unpaid (refund still pending) or paid (already refunded).
+  const paymentFilterOptions = [
+    { label: "All", value: "" },
+    { label: "Refund pending", value: "unpaid" },
+    { label: "Refunded", value: "paid" },
+  ];
 
   const showRefundModal = (record: IRefundManagement) => {
     setCurrentRecord(record);
@@ -186,7 +158,7 @@ const AdminRefundManagement = () => {
           setPage(1);
         }}
         value={paymentFilter}
-        selectClassName="!w-[130px]"
+        selectClassName="!w-[160px]"
       />
 
       <ReusableTabs<ActiveTab>

@@ -4,6 +4,7 @@ import ReuseTable from "../../utils/ReuseTable";
 import { Tooltip } from "antd";
 import ReuseButton from "../Button/ReuseButton";
 import { IRefundManagement } from "../../types/refundManagement.type";
+import { isRefundCompleted } from "../../utils/refundStatus";
 
 interface AdminGearRefundTableProps {
   data: IRefundManagement[];
@@ -136,21 +137,15 @@ const AdminGearRefundTable: React.FC<AdminGearRefundTableProps> = ({
       },
     },
     {
-      title: "Payment Status",
-      dataIndex: "paymentStatus",
-      key: "paymentStatus",
-      render: (status: string) => {
-        const isReceivedOrPaid =
-          status?.toLowerCase() === "received" ||
-          status?.toLowerCase() === "paid" ||
-          status?.toLowerCase() === "refunded";
+      title: "Refund Status",
+      key: "refundStatus",
+      render: (_: unknown, record: IRefundManagement) => {
+        const refunded = isRefundCompleted(record);
         return (
           <span
-            className={`${
-              isReceivedOrPaid ? "text-success" : "text-error"
-            } font-semibold capitalize`}
+            className={`${refunded ? "text-success" : "text-error"} font-semibold`}
           >
-            {status || "pending"}
+            {refunded ? "Refunded" : "Pending"}
           </span>
         );
       },
@@ -159,10 +154,7 @@ const AdminGearRefundTable: React.FC<AdminGearRefundTableProps> = ({
       title: "Action",
       key: "action",
       render: (_: unknown, record: IRefundManagement) => {
-        const isRefunded =
-          record?.paymentStatus?.toLowerCase() === "received" ||
-          record?.paymentStatus?.toLowerCase() === "paid" ||
-          record?.paymentStatus?.toLowerCase() === "refunded";
+        const isRefunded = isRefundCompleted(record);
 
         return (
           <div>
