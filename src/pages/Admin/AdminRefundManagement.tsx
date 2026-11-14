@@ -10,8 +10,8 @@ import tryCatchWrapper from "../../utils/tryCatchWrapper";
 import {
   useGetCancelledEventOrdersQuery,
   useGetCancelledGearOrdersQuery,
-  useEverOrderMakePaymentMutation,
-  useGearOrderMakePaymentMutation,
+  useEventOrderCompleteRefundMutation,
+  useGearOrderCompleteRefundMutation,
 } from "../../redux/features/refundManagement/refundManagementApi";
 
 type ActiveTab = "professional" | "gear";
@@ -26,9 +26,9 @@ const AdminRefundManagement = () => {
   const [showViewRefundModal, setShowViewRefundModal] = useState(false);
   const [currentRecord, setCurrentRecord] = useState<IRefundManagement | null>(null);
 
-  // Mutations (using the same complete-payment API as delivery management)
-  const [everOrderMakePayment] = useEverOrderMakePaymentMutation();
-  const [gearOrderMakePayment] = useGearOrderMakePaymentMutation();
+  // PATCH /event-order/complete-refund/:eventOrderId and /gear-order/complete-refund/:gearOrderId
+  const [eventOrderCompleteRefund] = useEventOrderCompleteRefundMutation();
+  const [gearOrderCompleteRefund] = useGearOrderCompleteRefundMutation();
 
   // 1. Photography & Videography cancelled orders (/event-order?status=cancelled&searchTerms=...)
   const {
@@ -143,7 +143,7 @@ const AdminRefundManagement = () => {
     let res;
     if (activeTab === "professional") {
       res = await tryCatchWrapper(
-        everOrderMakePayment,
+        eventOrderCompleteRefund,
         { params: target._id },
         "Processing refund..."
       );
@@ -153,7 +153,7 @@ const AdminRefundManagement = () => {
       }
     } else if (activeTab === "gear") {
       res = await tryCatchWrapper(
-        gearOrderMakePayment,
+        gearOrderCompleteRefund,
         { params: target._id },
         "Processing refund..."
       );

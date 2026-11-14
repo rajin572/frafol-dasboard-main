@@ -42,10 +42,11 @@ const refundManagementApi = baseApi.injectEndpoints({
       providesTags: [tagTypes.refundManagement],
     }),
 
-    // Event order refund payment (same endpoint as delivery management)
-    everOrderMakePayment: builder.mutation({
+    // Event order refund. req.params is the eventOrderId.
+    // (Own endpoint: it used to share /complete-payment with delivery management.)
+    eventOrderCompleteRefund: builder.mutation({
       query: (req) => ({
-        url: `/event-order/complete-payment/${req.params}`,
+        url: `/event-order/complete-refund/${req.params}`,
         method: "PATCH",
       }),
       invalidatesTags: [
@@ -55,10 +56,10 @@ const refundManagementApi = baseApi.injectEndpoints({
       ],
     }),
 
-    // Gear order refund payment (same endpoint as delivery management)
-    gearOrderMakePayment: builder.mutation({
+    // Gear order refund. req.params is the gearOrderId.
+    gearOrderCompleteRefund: builder.mutation({
       query: (req) => ({
-        url: `/gear-order/complete-payment/${req.params}`,
+        url: `/gear-order/complete-refund/${req.params}`,
         method: "PATCH",
       }),
       invalidatesTags: [
@@ -73,6 +74,6 @@ const refundManagementApi = baseApi.injectEndpoints({
 export const {
   useGetCancelledEventOrdersQuery,
   useGetCancelledGearOrdersQuery,
-  useEverOrderMakePaymentMutation,
-  useGearOrderMakePaymentMutation,
+  useEventOrderCompleteRefundMutation,
+  useGearOrderCompleteRefundMutation,
 } = refundManagementApi;
