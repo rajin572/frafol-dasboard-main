@@ -7,22 +7,30 @@ export const OTP_COOLDOWN_SECONDS = 120;
 
 const STORAGE_KEY = "frafoldashboard_otp_sent_at";
 
+// Same time kept in memory too. Some browsers block site storage (strict privacy settings, some
+// private windows): sessionStorage then throws, and the countdown used to vanish at once. The
+// forgot-password form and the OTP page are one client-side navigation, so this copy survives
+// the page change; only a full reload loses it there.
+let memorySentAt = 0;
+
 // Call when a code has been sent (forgot-password submit, "Click to resend").
 export const markOtpSent = () => {
+  memorySentAt = Date.now();
   try {
-    sessionStorage.setItem(STORAGE_KEY, String(Date.now()));
+    sessionStorage.setItem(STORAGE_KEY, String(memorySentAt));
   } catch {
-    // storage blocked (private mode): the countdown just starts from this page's state
+    // storage blocked: the in-memory time above is used
   }
 };
 
 const readSecondsLeft = () => {
-  let sentAt = 0;
+  let stored = 0;
   try {
-    sentAt = Number(sessionStorage.getItem(STORAGE_KEY)) || 0;
+    stored = Number(sessionStorage.getItem(STORAGE_KEY)) || 0;
   } catch {
-    return 0;
+    // storage blocked: use the in-memory time only
   }
+  const sentAt = Math.max(stored, memorySentAt);
   const left = Math.ceil((sentAt + OTP_COOLDOWN_SECONDS * 1000 - Date.now()) / 1000);
   // A wrong system clock must not lock the button for longer than the cooldown.
   return Math.min(Math.max(left, 0), OTP_COOLDOWN_SECONDS);
@@ -36,8 +44,14 @@ export const useOtpCooldown = () => {
   const [secondsLeft, setSecondsLeft] = useState(readSecondsLeft);
 
   useEffect(() => {
-    const timer = window.setInterval(() => setSecondsLeft(readSecondsLeft()), 1000);
-    return () => window.clearInterval(timer);
+    const tick = () => setSecondsLeft(readSecondsLeft());
+    const timer = window.setInterval(tick, 1000);
+    // Browsers slow timers down in background tabs; refresh at once when the tab is shown again.
+    document.addEventListener("visibilitychange", tick);
+    return () => {
+      window.clearInterval(timer);
+      document.removeEventListener("visibilitychange", tick);
+    };
   }, []);
 
   const restart = useCallback(() => {
